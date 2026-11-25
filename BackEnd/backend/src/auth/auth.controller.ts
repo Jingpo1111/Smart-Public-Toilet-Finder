@@ -11,6 +11,9 @@ import { clearRefreshCookie, REFRESH_COOKIE, setRefreshCookie } from './auth-coo
 import { AuthService, SessionResult } from './auth.service';
 import { ChangePasswordDto, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto/auth.dto';
 
+const refreshCookie = (req: Request): string | undefined =>
+  (req.cookies as Record<string, string | undefined> | undefined)?.[REFRESH_COOKIE];
+
 const CSRF_HEADER_DOC = {
   name: 'X-CSRF-Protection',
   required: true,
@@ -71,7 +74,7 @@ export class AuthController {
   })
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      return this.respond(res, await this.auth.refresh(req.cookies?.[REFRESH_COOKIE], req.get('user-agent')));
+      return this.respond(res, await this.auth.refresh(refreshCookie(req), req.get('user-agent')));
     } catch (e) {
       clearRefreshCookie(res, this.config);
       throw e;
@@ -87,7 +90,7 @@ export class AuthController {
   @ResponseMessage('Logged out successfully')
   @ApiOperation({ summary: 'Revoke the current session (refresh cookie) and clear the cookie' })
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    await this.auth.logout(req.cookies?.[REFRESH_COOKIE]);
+    await this.auth.logout(refreshCookie(req));
     clearRefreshCookie(res, this.config);
     return null;
   }

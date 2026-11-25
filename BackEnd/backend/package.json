@@ -1,7 +1,7 @@
 {
   "name": "toiletgo-kh-backend",
   "version": "1.0.0",
-  "description": "ToiletGo KH — Smart Public Toilet Finder in Cambodia (NestJS REST API)",
+  "description": "ToiletGo KH \u2014 Smart Public Toilet Finder in Cambodia (NestJS REST API)",
   "private": true,
   "license": "UNLICENSED",
   "engines": {
@@ -24,6 +24,7 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "storage:setup": "tsx scripts/setup-storage.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
     "openapi:export": "npm run build && node dist/scripts/export-openapi.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -91,5 +92,8 @@
     "tsx": "^4.23.15",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.74.0"
+  },
+  "overrides": {
+    "effect": "^3.22.5"
   }
 }

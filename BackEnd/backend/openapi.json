@@ -1,0 +1,6157 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "description": "Checks the database and storage connectivity. Returns 503 when the database is unreachable.",
+        "operationId": "Health_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Health check",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/me/notifications": {
+      "get": {
+        "operationId": "Notifications_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "unreadOnly",
+            "required": false,
+            "in": "query",
+            "description": "Only unread notifications",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List my notifications (paginated, newest first)",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/notifications/unread-count": {
+      "get": {
+        "operationId": "Notifications_unreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Number of unread notifications",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/notifications/read-all": {
+      "patch": {
+        "operationId": "Notifications_readAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark all my notifications as read",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/notifications/{id}/read": {
+      "patch": {
+        "operationId": "Notifications_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark one of my notifications as read",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/me/profile": {
+      "get": {
+        "operationId": "Me_profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get my profile (same as GET /auth/me)",
+        "tags": [
+          "Me"
+        ]
+      },
+      "patch": {
+        "description": "Accepts fullName, phone and preferredLanguage only. Sending role or any other property returns 400.",
+        "operationId": "Me_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update my profile",
+        "tags": [
+          "Me"
+        ]
+      }
+    },
+    "/api/me/summary": {
+      "get": {
+        "operationId": "Me_summary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dashboard counters: my submissions/reports by status, reviews, favorites, unread notifications",
+        "tags": [
+          "Me"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "description": "Always creates role USER. Returns an access token and sets the HttpOnly refresh cookie `tg_refresh` (path /api/auth).",
+        "operationId": "Auth_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Register a new USER account",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "description": "Sets the HttpOnly refresh cookie.",
+        "operationId": "Auth_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Log in with e-mail and password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "description": "Send with credentials (cookie) and header X-CSRF-Protection: 1. The old refresh token is revoked; re-using it revokes the whole session family.",
+        "operationId": "Auth_refresh",
+        "parameters": [
+          {
+            "name": "X-CSRF-Protection",
+            "in": "header",
+            "description": "Must be \"1\". Protects cookie-authenticated endpoints against CSRF.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "refresh-cookie": []
+          }
+        ],
+        "summary": "Rotate the refresh cookie and get a new access token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "Auth_logout",
+        "parameters": [
+          {
+            "name": "X-CSRF-Protection",
+            "in": "header",
+            "description": "Must be \"1\". Protects cookie-authenticated endpoints against CSRF.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "refresh-cookie": []
+          }
+        ],
+        "summary": "Revoke the current session (refresh cookie) and clear the cookie",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout-all": {
+      "post": {
+        "operationId": "Auth_logoutAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoke all sessions and invalidate all access tokens of the current user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "Auth_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Current account (role is the current database role)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "description": "Same response whether or not the account exists. Returns 503 when SMTP is not configured (no e-mail can be sent). The e-mail links to FRONTEND_URL/reset-password?token=…",
+        "operationId": "Auth_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": ""
+          }
+        },
+        "summary": "Request a password reset e-mail",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "Auth_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Reset the password with the e-mailed token (revokes all sessions)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/me/change-password": {
+      "post": {
+        "description": "Revokes all other sessions. Returns a new access token and sets a new refresh cookie for this client.",
+        "operationId": "Account_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change my password",
+        "tags": [
+          "Me"
+        ]
+      }
+    },
+    "/api/toilets": {
+      "get": {
+        "description": "Optional lat/lng add a distance to each item and enable sort=distance and radius. Approximate straight-line (great-circle) distance calculated with the Haversine formula. It is not walking or driving distance.",
+        "operationId": "Toilets_search",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search name (EN/KM), address, district or Sangkat",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "province",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 80,
+              "example": "Phnom Penh",
+              "type": "string"
+            }
+          },
+          {
+            "name": "district",
+            "required": false,
+            "in": "query",
+            "description": "Khan (district), case-insensitive exact match",
+            "schema": {
+              "maxLength": 80,
+              "example": "Daun Penh",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sangkat",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 80,
+              "example": "Wat Phnom",
+              "type": "string"
+            }
+          },
+          {
+            "name": "accessType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FREE",
+                "PAID",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "name": "free",
+            "required": false,
+            "in": "query",
+            "description": "Shortcut for accessType=FREE",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "description": "Maximum price in KHR (FREE WCs always match; PAID with unknown price never match)",
+            "schema": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "openNow",
+            "required": false,
+            "in": "query",
+            "description": "true = known to be open now (Asia/Phnom_Penh); false = known to be closed now. WCs with unknown hours match neither.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "wheelchairAccessible",
+            "required": false,
+            "in": "query",
+            "description": "true / false filter on known values (unknown never matches)",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hasWater",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hasSoap",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "babyChanging",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minRating",
+            "required": false,
+            "in": "query",
+            "description": "Minimum average overall rating",
+            "schema": {
+              "minimum": 1,
+              "maximum": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "minCleanliness",
+            "required": false,
+            "in": "query",
+            "description": "Minimum average cleanliness rating",
+            "schema": {
+              "minimum": 1,
+              "maximum": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          },
+          {
+            "name": "lat",
+            "required": false,
+            "in": "query",
+            "description": "Latitude of the reference point (enables distance)",
+            "schema": {
+              "example": 11.5564,
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": false,
+            "in": "query",
+            "description": "Longitude of the reference point",
+            "schema": {
+              "example": 104.9282,
+              "type": "number"
+            }
+          },
+          {
+            "name": "radius",
+            "required": false,
+            "in": "query",
+            "description": "Radius in metres around lat/lng (max 50000)",
+            "schema": {
+              "minimum": 50,
+              "maximum": 50000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "\"distance\" requires lat & lng",
+            "schema": {
+              "default": "rating",
+              "type": "string",
+              "enum": [
+                "distance",
+                "rating",
+                "cleanliness",
+                "name",
+                "newest",
+                "price"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ToiletSummaryResponse"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "total": {
+                          "type": "integer",
+                          "example": 42
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 3
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Search and filter verified WCs (paginated)",
+        "tags": [
+          "Toilets (public)"
+        ]
+      }
+    },
+    "/api/toilets/nearby": {
+      "get": {
+        "description": "Query parameters are named lat and lng. Approximate straight-line (great-circle) distance calculated with the Haversine formula. It is not walking or driving distance. The caller's location is not stored.",
+        "operationId": "Toilets_nearby",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search name (EN/KM), address, district or Sangkat",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "province",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 80,
+              "example": "Phnom Penh",
+              "type": "string"
+            }
+          },
+          {
+            "name": "district",
+            "required": false,
+            "in": "query",
+            "description": "Khan (district), case-insensitive exact match",
+            "schema": {
+              "maxLength": 80,
+              "example": "Daun Penh",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sangkat",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 80,
+              "example": "Wat Phnom",
+              "type": "string"
+            }
+          },
+          {
+            "name": "accessType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FREE",
+                "PAID",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "name": "free",
+            "required": false,
+            "in": "query",
+            "description": "Shortcut for accessType=FREE",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "description": "Maximum price in KHR (FREE WCs always match; PAID with unknown price never match)",
+            "schema": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "openNow",
+            "required": false,
+            "in": "query",
+            "description": "true = known to be open now (Asia/Phnom_Penh); false = known to be closed now. WCs with unknown hours match neither.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "wheelchairAccessible",
+            "required": false,
+            "in": "query",
+            "description": "true / false filter on known values (unknown never matches)",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hasWater",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hasSoap",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "babyChanging",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minRating",
+            "required": false,
+            "in": "query",
+            "description": "Minimum average overall rating",
+            "schema": {
+              "minimum": 1,
+              "maximum": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "minCleanliness",
+            "required": false,
+            "in": "query",
+            "description": "Minimum average cleanliness rating",
+            "schema": {
+              "minimum": 1,
+              "maximum": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          },
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "description": "Latitude (WGS84)",
+            "schema": {
+              "example": 11.5564,
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "description": "Longitude (WGS84)",
+            "schema": {
+              "example": 104.9282,
+              "type": "number"
+            }
+          },
+          {
+            "name": "radius",
+            "required": false,
+            "in": "query",
+            "description": "Radius in metres",
+            "schema": {
+              "minimum": 50,
+              "maximum": 20000,
+              "default": 2000,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ToiletSummaryResponse"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "total": {
+                          "type": "integer",
+                          "example": 42
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 3
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Nearby verified WCs within a radius, nearest first (paginated)",
+        "tags": [
+          "Toilets (public)"
+        ]
+      }
+    },
+    "/api/toilets/districts": {
+      "get": {
+        "operationId": "Toilets_districts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Districts (Khan) that have verified WCs, with counts",
+        "tags": [
+          "Toilets (public)"
+        ]
+      }
+    },
+    "/api/toilets/{id}": {
+      "get": {
+        "operationId": "Toilets_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lat",
+            "required": false,
+            "in": "query",
+            "description": "Optional reference latitude to include distance",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": false,
+            "in": "query",
+            "description": "Optional reference longitude to include distance",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ToiletDetailResponse"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "WC details (verified, non-archived only). isFavorite is included when authenticated.",
+        "tags": [
+          "Toilets (public)"
+        ]
+      }
+    },
+    "/api/toilets/{id}/images": {
+      "get": {
+        "operationId": "Toilets_images",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Fresh signed URLs for the photos of a verified WC (use when URLs expire)",
+        "tags": [
+          "Toilets (public)"
+        ]
+      }
+    },
+    "/api/uploads/suggestions": {
+      "post": {
+        "description": "Returns image IDs to send as `imageIds` in POST /toilet-suggestions. Photos stay private (signed URLs for you and administrators only) unless the suggestion is approved.",
+        "operationId": "Uploads_suggestion",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiImageUploadSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload private photos for a WC suggestion",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/uploads/suggestions/{id}": {
+      "delete": {
+        "operationId": "Uploads_deleteSuggestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete one of my unattached suggestion photos",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/uploads/reports": {
+      "post": {
+        "description": "Returns image IDs to send as `imageIds` in POST /toilets/:id/reports.",
+        "operationId": "Uploads_report",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiImageUploadSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload private photos for a maintenance report",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/uploads/reports/{id}": {
+      "delete": {
+        "operationId": "Uploads_deleteReport",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete one of my unattached report photos",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/uploads/toilets": {
+      "post": {
+        "description": "Photos are linked immediately and become public if the WC is verified and not archived.",
+        "operationId": "Uploads_toilet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ToiletImageUploadSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload photos directly to a WC (ADMIN, or MANAGER assigned to that WC)",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/uploads/avatar": {
+      "post": {
+        "operationId": "Uploads_avatar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AvatarUploadSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload or replace my avatar (returns my updated profile)",
+        "tags": [
+          "Uploads"
+        ]
+      },
+      "delete": {
+        "operationId": "Uploads_deleteAvatar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove my avatar",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/toilet-suggestions": {
+      "post": {
+        "description": "JSON body. Upload photos first with POST /uploads/suggestions and pass the returned IDs as imageIds. To correct a rejected submission, pass resubmittedFromId (and optionally retainedImageIds). The submission and its photos stay private until an administrator approves it.",
+        "operationId": "ToiletSuggestions_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSuggestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit a missing WC location (status is always PENDING)",
+        "tags": [
+          "WC suggestions"
+        ]
+      }
+    },
+    "/api/me/toilet-suggestions": {
+      "get": {
+        "operationId": "MySuggestions_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My submissions with status and administrator feedback (paginated)",
+        "tags": [
+          "WC suggestions"
+        ]
+      }
+    },
+    "/api/me/toilet-suggestions/{id}": {
+      "get": {
+        "operationId": "MySuggestions_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One of my submissions, with photos (signed URLs) and review history",
+        "tags": [
+          "WC suggestions"
+        ]
+      }
+    },
+    "/api/toilets/{id}/reviews": {
+      "get": {
+        "operationId": "ToiletReviews_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "newest",
+              "type": "string",
+              "enum": [
+                "newest",
+                "highest",
+                "lowest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Public reviews of a verified WC (hidden reviews excluded; author shown as \"First L.\")",
+        "tags": [
+          "Reviews"
+        ]
+      },
+      "post": {
+        "operationId": "ToiletReviews_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Review a WC (one review per user and WC; 409 if you already reviewed it)",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/api/reviews/{id}": {
+      "patch": {
+        "operationId": "Reviews_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edit my review",
+        "tags": [
+          "Reviews"
+        ]
+      },
+      "delete": {
+        "operationId": "Reviews_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete my review",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/api/me/reviews": {
+      "get": {
+        "operationId": "Reviews_mine",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "newest",
+              "type": "string",
+              "enum": [
+                "newest",
+                "highest",
+                "lowest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My reviews (including any hidden by moderation)",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/api/toilets/{id}/reports": {
+      "post": {
+        "description": "Upload optional photos first with POST /uploads/reports and pass their IDs as imageIds.",
+        "operationId": "Reports_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report a problem at a verified WC",
+        "tags": [
+          "Maintenance reports"
+        ]
+      }
+    },
+    "/api/me/reports": {
+      "get": {
+        "operationId": "Reports_mine",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "RESOLVED",
+                "REJECTED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My reports with status, resolution and history (paginated)",
+        "tags": [
+          "Maintenance reports"
+        ]
+      }
+    },
+    "/api/me/reports/{id}": {
+      "get": {
+        "operationId": "Reports_mineOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One of my reports",
+        "tags": [
+          "Maintenance reports"
+        ]
+      }
+    },
+    "/api/me/favorites": {
+      "get": {
+        "operationId": "Favorites_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My favourite WCs (paginated, with cover photos)",
+        "tags": [
+          "Favorites"
+        ]
+      }
+    },
+    "/api/me/favorites/{toiletId}": {
+      "post": {
+        "operationId": "Favorites_add",
+        "parameters": [
+          {
+            "name": "toiletId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a verified WC to my favourites (idempotent)",
+        "tags": [
+          "Favorites"
+        ]
+      },
+      "delete": {
+        "operationId": "Favorites_remove",
+        "parameters": [
+          {
+            "name": "toiletId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a WC from my favourites (idempotent)",
+        "tags": [
+          "Favorites"
+        ]
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "operationId": "PublicStats_stats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Aggregate platform statistics for the homepage (no personal data)",
+        "tags": [
+          "Statistics (public)"
+        ]
+      }
+    },
+    "/api/manager/dashboard": {
+      "get": {
+        "operationId": "Manager_dashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Statistics for my assigned WCs",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets": {
+      "get": {
+        "operationId": "Manager_toilets",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "My assigned WCs (paginated)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}": {
+      "get": {
+        "operationId": "Manager_toilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assigned WC details",
+        "tags": [
+          "Manager"
+        ]
+      },
+      "patch": {
+        "description": "Name, address, coordinates, verification and archiving are administrator-only and rejected with 400.",
+        "operationId": "Manager_updateToilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManagerUpdateToiletDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an assigned WC (description, status, access/price, facilities, opening hours)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/images": {
+      "get": {
+        "operationId": "Manager_listImages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Photos of an assigned WC",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/cover": {
+      "patch": {
+        "operationId": "Manager_setCover",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCoverDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Choose the cover photo of an assigned WC",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/images/{imageId}": {
+      "delete": {
+        "operationId": "Manager_deleteImage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "required": false,
+            "in": "query",
+            "description": "Moderation reason",
+            "schema": {
+              "maxLength": 300,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a photo of an assigned WC",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/qr": {
+      "get": {
+        "operationId": "Manager_qr",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Feedback QR code (SVG and PNG data URL) linking to the public WC page",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/cleaning-schedules": {
+      "get": {
+        "operationId": "Manager_schedules",
+        "parameters": [
+          {
+            "name": "dayOfWeek",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 6,
+              "type": "number"
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cleaning schedules of my WCs (filter by toiletId / dayOfWeek)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/cleaning-schedules": {
+      "get": {
+        "operationId": "Manager_toiletSchedules",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cleaning schedule of an assigned WC",
+        "tags": [
+          "Manager"
+        ]
+      },
+      "post": {
+        "operationId": "Manager_createSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCleaningScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a weekly cleaning slot",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/cleaning-schedules/{scheduleId}": {
+      "patch": {
+        "operationId": "Manager_updateSchedule",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCleaningScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a cleaning slot",
+        "tags": [
+          "Manager"
+        ]
+      },
+      "delete": {
+        "operationId": "Manager_deleteSchedule",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a cleaning slot",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/cleaning-logs": {
+      "get": {
+        "operationId": "Manager_logs",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cleaning history of my WCs (paginated)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/cleaning-logs": {
+      "get": {
+        "operationId": "Manager_toiletLogs",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cleaning history of an assigned WC (paginated)",
+        "tags": [
+          "Manager"
+        ]
+      },
+      "post": {
+        "operationId": "Manager_createLog",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCleaningLogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log a cleaning of an assigned WC",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/reports": {
+      "get": {
+        "operationId": "Manager_listReports",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "RESOLVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DIRTY",
+                "NO_WATER",
+                "NO_SOAP",
+                "BROKEN_DOOR",
+                "BROKEN_EQUIPMENT",
+                "INCORRECT_LOCATION",
+                "INCORRECT_PRICE",
+                "CLOSED",
+                "OTHER"
+              ]
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search description or WC name",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "unresolved",
+            "required": false,
+            "in": "query",
+            "description": "Only PENDING and IN_PROGRESS",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reports for my assigned WCs (paginated)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/reports/{id}": {
+      "get": {
+        "operationId": "Manager_report",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report details (assigned WCs only)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/manager/reports/{id}/status": {
+      "patch": {
+        "operationId": "Manager_updateReport",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReportStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change report status (resolutionNote required for RESOLVED/REJECTED)",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/admin/dashboard": {
+      "get": {
+        "operationId": "Admin_dashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dashboard statistics, recent pending submissions and unresolved reports",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/analytics": {
+      "get": {
+        "operationId": "Admin_analyticsData",
+        "parameters": [
+          {
+            "name": "months",
+            "required": false,
+            "in": "query",
+            "description": "Number of months in the monthly series",
+            "schema": {
+              "minimum": 1,
+              "maximum": 36,
+              "default": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Analytics: monthly registrations/submissions, district distribution, report/rating breakdowns",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "operationId": "Admin_listUsers",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search name, e-mail or phone",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "USER",
+                "MANAGER",
+                "ADMIN"
+              ]
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Search users (paginated)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/users/{id}": {
+      "get": {
+        "operationId": "Admin_getUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "User details with manager assignments",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/users/{id}/role": {
+      "patch": {
+        "operationId": "Admin_changeRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change a user role (not your own; the last admin cannot be demoted)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/users/{id}/status": {
+      "patch": {
+        "operationId": "Admin_changeStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeUserStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activate or deactivate an account (deactivation revokes all sessions)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/suggestions": {
+      "get": {
+        "operationId": "Admin_listSuggestions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search name, address, district, Sangkat, contributor name/e-mail",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "district",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 80,
+              "type": "string"
+            }
+          },
+          {
+            "name": "hasPotentialDuplicate",
+            "required": false,
+            "in": "query",
+            "description": "Only submissions flagged as possible duplicates",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "contributorId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "newest",
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Review queue: search/filter submissions (paginated)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/suggestions/{id}": {
+      "get": {
+        "operationId": "Admin_getSuggestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submission details: contributor, private photos (signed URLs), coordinates, duplicate warnings, history",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/suggestions/{id}/status": {
+      "patch": {
+        "description": "APPROVED: optional corrections/publishImageIds/coverImageId; creates a verified WC atomically and returns { suggestion, toilet }. REJECTED: rejectionReason required. Returns 409 if the submission was already processed (e.g. by another admin), with details.status and details.publishedToiletId. 403 when reviewing your own submission.",
+        "operationId": "Admin_reviewSuggestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewSuggestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve or reject a PENDING submission",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/suggestions/{id}/images/{imageId}": {
+      "delete": {
+        "operationId": "Admin_removeSuggestionImage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "required": false,
+            "in": "query",
+            "description": "Moderation reason",
+            "schema": {
+              "maxLength": 300,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Moderation: remove an inappropriate submission photo",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets": {
+      "get": {
+        "operationId": "Admin_listToilets",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search name, address, district, Sangkat",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          },
+          {
+            "name": "accessType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FREE",
+                "PAID",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "name": "district",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 80,
+              "type": "string"
+            }
+          },
+          {
+            "name": "archived",
+            "required": false,
+            "in": "query",
+            "description": "Archived WCs",
+            "schema": {
+              "default": "exclude",
+              "type": "string",
+              "enum": [
+                "exclude",
+                "include",
+                "only"
+              ]
+            }
+          },
+          {
+            "name": "isVerified",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "managerId",
+            "required": false,
+            "in": "query",
+            "description": "Only WCs assigned to this manager",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "newest",
+              "type": "string",
+              "enum": [
+                "newest",
+                "name",
+                "rating",
+                "updated"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ToiletSummaryResponse"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "total": {
+                          "type": "integer",
+                          "example": 42
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 3
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "WC inventory including unverified/archived records (paginated)",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "operationId": "Admin_createToilet",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateToiletDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AdminToiletResponse"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminToiletResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a verified WC (administrators only)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}": {
+      "get": {
+        "operationId": "Admin_getToilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AdminToiletResponse"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "WC details in any state",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "patch": {
+        "operationId": "Admin_updateToilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUpdateToiletDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AdminToiletResponse"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update any WC field, facilities and opening hours (null clears optional fields)",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "delete": {
+        "operationId": "Admin_archiveToilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "required": false,
+            "in": "query",
+            "description": "Reason for archiving",
+            "schema": {
+              "maxLength": 500,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminToiletResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Archive a WC (soft delete; hidden from public endpoints). Optional ?reason=",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}/restore": {
+      "post": {
+        "operationId": "Admin_restoreToilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminToiletResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Restore an archived WC",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}/verify": {
+      "post": {
+        "operationId": "Admin_verifyToilet",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminToiletResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Record an on-site re-verification (updates lastVerifiedAt)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}/images": {
+      "get": {
+        "operationId": "Admin_toiletImages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Photos of a WC",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}/cover": {
+      "patch": {
+        "operationId": "Admin_setCover",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCoverDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Choose the cover photo",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}/images/{imageId}": {
+      "delete": {
+        "operationId": "Admin_deleteImage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "required": false,
+            "in": "query",
+            "description": "Moderation reason",
+            "schema": {
+              "maxLength": 300,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete or moderate a WC photo",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/manager-assignments": {
+      "get": {
+        "operationId": "Admin_listAssignments",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "managerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List manager assignments (paginated)",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "operationId": "Admin_assign",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssignmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign a MANAGER to a WC (409 if already assigned)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/manager-assignments/{id}": {
+      "delete": {
+        "operationId": "Admin_unassign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a manager assignment",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/reports": {
+      "get": {
+        "operationId": "Admin_listReports",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "RESOLVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DIRTY",
+                "NO_WATER",
+                "NO_SOAP",
+                "BROKEN_DOOR",
+                "BROKEN_EQUIPMENT",
+                "INCORRECT_LOCATION",
+                "INCORRECT_PRICE",
+                "CLOSED",
+                "OTHER"
+              ]
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search description or WC name",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "unresolved",
+            "required": false,
+            "in": "query",
+            "description": "Only PENDING and IN_PROGRESS",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "All maintenance reports (paginated, filterable)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/reports/{id}": {
+      "get": {
+        "operationId": "Admin_getReport",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report details including reporter contact",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/reports/{id}/status": {
+      "patch": {
+        "operationId": "Admin_updateReport",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReportStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change report status",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/reviews": {
+      "get": {
+        "operationId": "Admin_listReviews",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "toiletId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "isHidden",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search in comments",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "All reviews including hidden ones (paginated)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/reviews/{id}/moderation": {
+      "patch": {
+        "operationId": "Admin_moderate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Hide or un-hide a review (hidden reviews do not count in averages)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/reviews/{id}": {
+      "delete": {
+        "operationId": "Admin_deleteReview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a review",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/admin/audit-logs": {
+      "get": {
+        "operationId": "Admin_auditLogs",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "entityType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 60,
+              "example": "Toilet",
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 64,
+              "type": "string"
+            }
+          },
+          {
+            "name": "actorId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Audit trail (paginated)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "ToiletGo KH API",
+    "description": "\nREST API for **ToiletGo KH — Smart Public Toilet Finder in Cambodia** (pilot: Phnom Penh).\nCurrency: KHR (integer riel). Timezone: Asia/Phnom_Penh. Languages: English / Khmer.\n\n### Response envelope\nSuccess: `{ \"success\": true, \"data\": …, \"message\": \"…\" }`.\nPaginated lists add `\"meta\": { \"page\", \"limit\", \"total\", \"totalPages\" }` (query: `page`, `limit` ≤ 100).\nErrors: `{ \"success\": false, \"statusCode\", \"error\", \"message\", \"details\"?, \"path\", \"timestamp\" }`.\nValidation errors (400) list `details: [{ field, errors[] }]`. Unknown properties are rejected.\n\n### Authentication contract\n1. `POST /auth/login` or `/auth/register` → `data.accessToken` (JWT, ~15 min) **and** an HttpOnly\n   cookie `tg_refresh` (path `/api/auth`, SameSite configurable, Secure in production).\n2. Send `Authorization: Bearer <accessToken>` on protected requests. Keep the access token in memory.\n3. When a request returns 401, call `POST /auth/refresh` **with credentials** (cookies) and header\n   `X-CSRF-Protection: 1`. The refresh cookie is rotated; re-using an old one revokes the session family.\n4. `POST /auth/logout` (same header) revokes the session. Roles are always taken from the database.\n\n### Image uploads\nUpload first (`multipart/form-data`, field `files`, ≤ 5 × 5 MB, JPG/PNG/WebP), receive image IDs, then\nreference them in JSON (`imageIds`). All buckets are private; images are returned as short-lived signed\nURLs with `expiresAt`. Pending/rejected submission photos are only visible to the contributor and admins.\n\n### Distances\nDistances are **approximate straight-line (Haversine) distances**, not walking or driving routes.\nNearby search uses query parameters `lat`, `lng` and `radius` (metres).\n",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Access token from /auth/login"
+      },
+      "refresh-cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "tg_refresh"
+      }
+    },
+    "schemas": {
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "example": "Sokha Chan"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^\\+?[0-9 ()-]{6,32}$",
+            "example": "+855 12 345 678",
+            "description": "Send null to remove"
+          },
+          "preferredLanguage": {
+            "enum": [
+              "EN",
+              "KM"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "example": "sokha@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Str0ngPassw0rd",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120,
+            "example": "Sokha Chan"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9 ()-]{6,32}$",
+            "example": "+855 12 345 678"
+          },
+          "preferredLanguage": {
+            "enum": [
+              "EN",
+              "KM"
+            ],
+            "type": "string",
+            "default": "EN"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "example": "sokha@example.com"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "example": "Str0ngPassw0rd"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "example": "sokha@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200,
+            "description": "Token from the reset link (?token=…)"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "N3wStr0ngPassw0rd"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "N3wStr0ngPassw0rd"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "FacilitiesResponse": {
+        "type": "object",
+        "properties": {
+          "hasWater": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasSoap": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "wheelchairAccessible": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "babyChanging": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasToiletPaper": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasHandDryer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isGenderNeutral": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "required": [
+          "hasWater",
+          "hasSoap",
+          "wheelchairAccessible",
+          "babyChanging",
+          "hasToiletPaper",
+          "hasHandDryer",
+          "isGenderNeutral"
+        ]
+      },
+      "ImageAccessResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Short-lived signed URL. Do not store it; refetch the resource after `expiresAt`."
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "expiresAt"
+        ]
+      },
+      "DistanceResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "STRAIGHT_LINE_APPROXIMATE"
+            ]
+          },
+          "meters": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "meters",
+          "note"
+        ]
+      },
+      "ToiletSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameKm": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "description": "KHR integer; null = unknown"
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesResponse"
+          },
+          "averageRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "reviewCount": {
+            "type": "number"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "lastVerifiedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "openNow": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "null when opening hours are unknown"
+          },
+          "openingHoursKnown": {
+            "type": "boolean"
+          },
+          "coverImage": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageAccessResponse"
+              }
+            ]
+          },
+          "distance": {
+            "description": "Present only when lat/lng were supplied",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DistanceResponse"
+              }
+            ]
+          },
+          "isSampleData": {
+            "type": "boolean",
+            "description": "true for fictional development seed data — must be labelled in the UI"
+          }
+        },
+        "required": [
+          "accessType",
+          "status",
+          "id",
+          "name",
+          "nameKm",
+          "address",
+          "province",
+          "district",
+          "sangkat",
+          "latitude",
+          "longitude",
+          "priceKhr",
+          "facilities",
+          "averageRating",
+          "cleanlinessRating",
+          "reviewCount",
+          "isVerified",
+          "lastVerifiedAt",
+          "openNow",
+          "openingHoursKnown",
+          "coverImage",
+          "isSampleData"
+        ]
+      },
+      "OpeningHourResponse": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "description": "0 = Sunday … 6 = Saturday"
+          },
+          "opensAt": {
+            "type": "string",
+            "description": "HH:mm, Asia/Phnom_Penh"
+          },
+          "closesAt": {
+            "type": "string",
+            "description": "HH:mm (24:00 = midnight end of day)"
+          },
+          "closesNextDay": {
+            "type": "boolean",
+            "description": "true when the interval ends on the following day"
+          },
+          "is24Hours": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dayOfWeek",
+          "opensAt",
+          "closesAt",
+          "closesNextDay",
+          "is24Hours"
+        ]
+      },
+      "ToiletDetailResponse": {
+        "type": "object",
+        "properties": {
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Phnom_Penh"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionKm": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "openingHours": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourResponse"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageAccessResponse"
+            }
+          },
+          "verifiedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isFavorite": {
+            "type": "boolean",
+            "description": "Only when the request is authenticated"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameKm": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "description": "KHR integer; null = unknown"
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesResponse"
+          },
+          "averageRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "reviewCount": {
+            "type": "number"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "lastVerifiedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "openNow": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "null when opening hours are unknown"
+          },
+          "openingHoursKnown": {
+            "type": "boolean"
+          },
+          "coverImage": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageAccessResponse"
+              }
+            ]
+          },
+          "distance": {
+            "description": "Present only when lat/lng were supplied",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DistanceResponse"
+              }
+            ]
+          },
+          "isSampleData": {
+            "type": "boolean",
+            "description": "true for fictional development seed data — must be labelled in the UI"
+          }
+        },
+        "required": [
+          "accessType",
+          "status",
+          "timezone",
+          "description",
+          "descriptionKm",
+          "notes",
+          "openingHours",
+          "images",
+          "verifiedAt",
+          "createdAt",
+          "updatedAt",
+          "id",
+          "name",
+          "nameKm",
+          "address",
+          "province",
+          "district",
+          "sangkat",
+          "latitude",
+          "longitude",
+          "priceKhr",
+          "facilities",
+          "averageRating",
+          "cleanlinessRating",
+          "reviewCount",
+          "isVerified",
+          "lastVerifiedAt",
+          "openNow",
+          "openingHoursKnown",
+          "coverImage",
+          "isSampleData"
+        ]
+      },
+      "MultiImageUploadSchema": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "description": "Up to 5 images (JPG/JPEG, PNG or WebP, max 5 MB each). Content is verified, EXIF/GPS metadata is stripped and images are re-encoded to WebP. Do not photograph people using toilets, private areas or personally identifying material."
+          }
+        },
+        "required": [
+          "files"
+        ]
+      },
+      "ToiletImageUploadSchema": {
+        "type": "object",
+        "properties": {
+          "toiletId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "WC to attach the photos to (admin, or manager assigned to it)"
+          },
+          "setAsCover": {
+            "type": "boolean",
+            "description": "Make the first uploaded photo the cover image"
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "description": "Up to 5 images (JPG/JPEG, PNG or WebP, max 5 MB each). Content is verified, EXIF/GPS metadata is stripped and images are re-encoded to WebP. Do not photograph people using toilets, private areas or personally identifying material."
+          }
+        },
+        "required": [
+          "toiletId",
+          "files"
+        ]
+      },
+      "AvatarUploadSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "One JPG/PNG/WebP image, max 5 MB. Resized to 512 px."
+          }
+        },
+        "required": [
+          "file"
+        ]
+      },
+      "FacilitiesDto": {
+        "type": "object",
+        "properties": {
+          "hasWater": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Running water. null = unknown"
+          },
+          "hasSoap": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Soap available. null = unknown"
+          },
+          "wheelchairAccessible": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Wheelchair accessible. null = unknown"
+          },
+          "babyChanging": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Baby changing facilities. null = unknown"
+          },
+          "hasToiletPaper": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasHandDryer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isGenderNeutral": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "OpeningHourDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6,
+            "description": "0 = Sunday … 6 = Saturday"
+          },
+          "opensAt": {
+            "type": "string",
+            "example": "06:00",
+            "description": "HH:mm (24 h)"
+          },
+          "closesAt": {
+            "type": "string",
+            "example": "21:00",
+            "description": "HH:mm (24 h); 24:00 allowed"
+          },
+          "is24Hours": {
+            "type": "boolean",
+            "description": "Open all day (ignores opensAt/closesAt)"
+          }
+        },
+        "required": [
+          "dayOfWeek"
+        ]
+      },
+      "CreateSuggestionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150,
+            "example": "Wat Phnom Public Toilet"
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150,
+            "example": "បង្គន់សាធារណៈវត្តភ្នំ"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300,
+            "example": "Street 94, near Wat Phnom park entrance"
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80,
+            "example": "Phnom Penh",
+            "default": "Phnom Penh"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Daun Penh",
+            "description": "Khan (district)"
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Wat Phnom"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8,
+            "example": 11.5764
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8,
+            "example": 104.9231
+          },
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "default": "UNKNOWN"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000,
+            "example": 500,
+            "description": "Integer price in Cambodian riel (KHR). FREE → 0; PAID with unknown price → null."
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "nullable": true,
+            "maxItems": 28,
+            "description": "null or [] = unknown hours",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "imageIds": {
+            "uniqueItems": true,
+            "maxItems": 5,
+            "description": "IDs returned by POST /uploads/suggestions (your own uploads, not older than 24 h)",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "coverImageId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "One of imageIds / retainedImageIds to use as cover photo"
+          },
+          "resubmittedFromId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "When correcting a REJECTED suggestion: its ID. The rejected suggestion and its review history are kept."
+          },
+          "retainedImageIds": {
+            "uniqueItems": true,
+            "description": "Photos of the rejected suggestion (resubmittedFromId) to reuse without uploading again",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "latitude",
+          "longitude"
+        ]
+      },
+      "CreateReviewDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Overall rating (integer 1–5)"
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Cleanliness rating (integer 1–5)"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "rating",
+          "cleanlinessRating"
+        ]
+      },
+      "UpdateReviewDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Overall rating (integer 1–5)"
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Cleanliness rating (integer 1–5)"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        }
+      },
+      "CreateReportDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "enum": [
+              "DIRTY",
+              "NO_WATER",
+              "NO_SOAP",
+              "BROKEN_DOOR",
+              "BROKEN_EQUIPMENT",
+              "INCORRECT_LOCATION",
+              "INCORRECT_PRICE",
+              "CLOSED",
+              "OTHER"
+            ],
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 2000,
+            "example": "There is no water in the hand basin since this morning."
+          },
+          "imageIds": {
+            "uniqueItems": true,
+            "maxItems": 5,
+            "description": "IDs returned by POST /uploads/reports",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "category",
+          "description"
+        ]
+      },
+      "ManagerUpdateToiletDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "default": "UNKNOWN"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000,
+            "example": 500,
+            "description": "Integer price in Cambodian riel (KHR). FREE → 0; PAID with unknown price → null."
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "nullable": true,
+            "maxItems": 28,
+            "description": "null or [] = unknown hours",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string",
+            "default": "OPEN"
+          },
+          "descriptionKm": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "SetCoverDto": {
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateCleaningScheduleDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6,
+            "description": "0 = Sunday … 6 = Saturday"
+          },
+          "startTime": {
+            "type": "string",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "example": "07:30",
+            "description": "Local time HH:mm (Asia/Phnom_Penh)"
+          },
+          "assignedTo": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "Cleaner or team name"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "dayOfWeek",
+          "startTime"
+        ]
+      },
+      "UpdateCleaningScheduleDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6,
+            "description": "0 = Sunday … 6 = Saturday"
+          },
+          "startTime": {
+            "type": "string",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "example": "07:30",
+            "description": "Local time HH:mm (Asia/Phnom_Penh)"
+          },
+          "assignedTo": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "Cleaner or team name"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "CreateCleaningLogDto": {
+        "type": "object",
+        "properties": {
+          "cleanedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the cleaning happened (ISO 8601). Defaults to now; cannot be in the future."
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "waterRefilled": {
+            "type": "boolean"
+          },
+          "soapRefilled": {
+            "type": "boolean"
+          },
+          "paperRefilled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateReportStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "RESOLVED",
+              "REJECTED"
+            ],
+            "type": "string"
+          },
+          "resolutionNote": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Required for RESOLVED and REJECTED; shown to the reporter"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ChangeRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "enum": [
+              "USER",
+              "MANAGER",
+              "ADMIN"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "ChangeUserStatusDto": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "description": "false deactivates the account and revokes all sessions"
+          }
+        },
+        "required": [
+          "isActive"
+        ]
+      },
+      "SuggestionCorrectionsDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150,
+            "example": "Wat Phnom Public Toilet"
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150,
+            "example": "បង្គន់សាធារណៈវត្តភ្នំ"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300,
+            "example": "Street 94, near Wat Phnom park entrance"
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80,
+            "example": "Phnom Penh",
+            "default": "Phnom Penh"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Daun Penh",
+            "description": "Khan (district)"
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Wat Phnom"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8,
+            "example": 11.5764
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8,
+            "example": 104.9231
+          },
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "default": "UNKNOWN"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000,
+            "example": 500,
+            "description": "Integer price in Cambodian riel (KHR). FREE → 0; PAID with unknown price → null."
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "nullable": true,
+            "maxItems": 28,
+            "description": "null or [] = unknown hours",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string",
+            "default": "OPEN",
+            "description": "Operational status of the published WC"
+          }
+        }
+      },
+      "ReviewSuggestionDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "APPROVED",
+              "REJECTED"
+            ],
+            "type": "string"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "description": "Required when rejecting; shown to the contributor"
+          },
+          "reviewNote": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Optional feedback for the contributor"
+          },
+          "corrections": {
+            "description": "Approval only: corrected WC data to publish",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SuggestionCorrectionsDto"
+              }
+            ]
+          },
+          "publishImageIds": {
+            "uniqueItems": true,
+            "description": "Approval only: which suggestion photos to publish (default: all not removed by moderation)",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "coverImageId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Approval only: suggestion photo to use as the cover"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ToiletManagerRef": {
+        "type": "object",
+        "properties": {
+          "assignmentId": {
+            "type": "string"
+          },
+          "managerId": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assignmentId",
+          "managerId",
+          "fullName",
+          "email"
+        ]
+      },
+      "AdminToiletResponse": {
+        "type": "object",
+        "properties": {
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Phnom_Penh"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "descriptionKm": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "openingHours": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourResponse"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageAccessResponse"
+            }
+          },
+          "verifiedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isFavorite": {
+            "type": "boolean",
+            "description": "Only when the request is authenticated"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameKm": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "description": "KHR integer; null = unknown"
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesResponse"
+          },
+          "averageRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "reviewCount": {
+            "type": "number"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "lastVerifiedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "openNow": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "null when opening hours are unknown"
+          },
+          "openingHoursKnown": {
+            "type": "boolean"
+          },
+          "coverImage": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageAccessResponse"
+              }
+            ]
+          },
+          "distance": {
+            "description": "Present only when lat/lng were supplied",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DistanceResponse"
+              }
+            ]
+          },
+          "isSampleData": {
+            "type": "boolean",
+            "description": "true for fictional development seed data — must be labelled in the UI"
+          },
+          "archivedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "archiveReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "verifiedById": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdById": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceSuggestionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "managers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToiletManagerRef"
+            }
+          },
+          "openReports": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "accessType",
+          "status",
+          "timezone",
+          "description",
+          "descriptionKm",
+          "notes",
+          "openingHours",
+          "images",
+          "verifiedAt",
+          "createdAt",
+          "updatedAt",
+          "id",
+          "name",
+          "nameKm",
+          "address",
+          "province",
+          "district",
+          "sangkat",
+          "latitude",
+          "longitude",
+          "priceKhr",
+          "facilities",
+          "averageRating",
+          "cleanlinessRating",
+          "reviewCount",
+          "isVerified",
+          "lastVerifiedAt",
+          "openNow",
+          "openingHoursKnown",
+          "coverImage",
+          "isSampleData",
+          "archivedAt",
+          "archiveReason",
+          "verifiedById",
+          "createdById",
+          "sourceSuggestionId",
+          "managers",
+          "openReports"
+        ]
+      },
+      "AdminCreateToiletDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150,
+            "example": "Wat Phnom Public Toilet"
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150,
+            "example": "បង្គន់សាធារណៈវត្តភ្នំ"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300,
+            "example": "Street 94, near Wat Phnom park entrance"
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80,
+            "example": "Phnom Penh",
+            "default": "Phnom Penh"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Daun Penh",
+            "description": "Khan (district)"
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Wat Phnom"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8,
+            "example": 11.5764
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8,
+            "example": 104.9231
+          },
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "default": "UNKNOWN"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000,
+            "example": 500,
+            "description": "Integer price in Cambodian riel (KHR). FREE → 0; PAID with unknown price → null."
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "nullable": true,
+            "maxItems": 28,
+            "description": "null or [] = unknown hours",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string",
+            "default": "OPEN"
+          },
+          "descriptionKm": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "latitude",
+          "longitude"
+        ]
+      },
+      "AdminUpdateToiletDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150,
+            "example": "Wat Phnom Public Toilet"
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150,
+            "example": "បង្គន់សាធារណៈវត្តភ្នំ"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300,
+            "example": "Street 94, near Wat Phnom park entrance"
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80,
+            "example": "Phnom Penh",
+            "default": "Phnom Penh"
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Daun Penh",
+            "description": "Khan (district)"
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80,
+            "example": "Wat Phnom"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8,
+            "example": 11.5764
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8,
+            "example": 104.9231
+          },
+          "accessType": {
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "default": "UNKNOWN"
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000,
+            "example": 500,
+            "description": "Integer price in Cambodian riel (KHR). FREE → 0; PAID with unknown price → null."
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "nullable": true,
+            "maxItems": 28,
+            "description": "null or [] = unknown hours",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ],
+            "type": "string",
+            "default": "OPEN"
+          },
+          "descriptionKm": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "CreateAssignmentDto": {
+        "type": "object",
+        "properties": {
+          "managerId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "User with role MANAGER"
+          },
+          "toiletId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "managerId",
+          "toiletId"
+        ]
+      },
+      "ModerateReviewDto": {
+        "type": "object",
+        "properties": {
+          "isHidden": {
+            "type": "boolean",
+            "description": "true hides the review from public lists and rating averages"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Required when hiding"
+          }
+        },
+        "required": [
+          "isHidden"
+        ]
+      }
+    }
+  }
+}

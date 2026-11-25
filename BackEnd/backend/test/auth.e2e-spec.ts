@@ -76,7 +76,7 @@ describe('Authentication & authorization (e2e)', () => {
     it('rejects tampered, unsigned, foreign-signed, expired and wrong-audience tokens', async () => {
       const u = await createUser(ctx, 'tamper@example.com');
       const [h, p, s] = u.token.split('.');
-      const payload = JSON.parse(Buffer.from(p, 'base64url').toString());
+      const payload = JSON.parse(Buffer.from(p, 'base64url').toString()) as Record<string, unknown>;
 
       // 1. Role claim changed to ADMIN, original signature kept
       const tampered = `${h}.${b64({ ...payload, role: 'ADMIN' })}.${s}`;
