@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "test -f .env && env -u VITE_API_BASE_URL -u VITE_API_BASE_URL_PUBLIC npm run build"
+  "buildCommand": "test -f .env && env -u VITE_API_BASE_URL -u VITE_API_BASE_URL_PUBLIC npm run build",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
