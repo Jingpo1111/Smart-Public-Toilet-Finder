@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, reactive, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePrefs } from '../stores/preferences'
-import { useDiscovery } from '../stores/discovery'
 import {
   bodySchema,
   discover,
@@ -15,11 +14,11 @@ import {
 } from '../services/api'
 import { point } from '../services/records'
 import { uploadField, uploadPhotos } from '../services/upload'
-import type { Photo, Point, Row } from '../types/api'
+import type { Photo, Row } from '../types/api'
+import LocationPicker from '../components/LocationPicker.vue'
 import MapView from '../components/MapView.vue'
 import ImageUploader from '../components/ImageUploader.vue'
 const p = usePrefs(),
-  store = useDiscovery(),
   route = useRoute(),
   router = useRouter(),
   step = ref(0),
@@ -61,17 +60,6 @@ const photoSupported = computed(
   () => !!uploadField('/uploads/suggestions') && !!bodySchema('post', endpoint).properties?.imageIds,
 )
 let redirect: ReturnType<typeof setTimeout> | undefined
-function pick(v: Point) {
-  data.latitude = v[0].toFixed(6)
-  data.longitude = v[1].toFixed(6)
-}
-async function gps() {
-  try {
-    pick(await store.locate())
-  } catch {
-    p.toast('gpsDenied')
-  }
-}
 onMounted(async () => {
   await discover()
   if (typeof route.query.from === 'string') {
@@ -165,8 +153,10 @@ const day = (i: number) =>
   new Intl.DateTimeFormat(p.lang === 'km' ? 'km-KH' : 'en', { weekday: 'long', timeZone: 'UTC' }).format(
     new Date(Date.UTC(2025, 0, 5 + i)),
   )
-function back() {
-  step.value--
+const stepHeading = ref<HTMLElement>()
+watch(step, () => stepHeading.value?.focus(), { flush: 'post' })
+function back(to: number) {
+  step.value = to
   error.value = ''
 }
 </script>
@@ -186,39 +176,47 @@ function back() {
           :class="{ current: step === i }"
           :aria-current="step === i ? 'step' : undefined"
         >
-          {{ i + 1 }} · {{ p.t(s) }}
+          <button v-if="i < step" type="button" class="text-link" :disabled="busy" @click="back(i)">
+            {{ i + 1 }} · {{ p.t(s) }}
+          </button>
+          <span v-else>{{ i + 1 }} · {{ p.t(s) }}</span>
         </li>
       </ol>
       <form class="panel stack" @submit.prevent="advance">
-        <h2>{{ p.t(stages[step]) }}</h2>
+        <h2 ref="stepHeading" tabindex="-1">{{ p.t(stages[step]) }}</h2>
         <div v-if="step === 0" class="form-grid">
           <label
-            v-for="key in ['name', 'address', 'province', 'district', 'sangkat'] as const"
+            v-for="key in ['name', 'address'] as const"
             :key="key"
           >
             {{ p.t(key) }}
             <input
               v-model.trim="data[key]"
-              :required="['name', 'address'].includes(key)"
-              :minlength="key === 'name' ? 2 : key === 'address' ? 3 : undefined"
-              :maxlength="key === 'address' ? 300 : key === 'name' ? 150 : 80"
+              required
+              :minlength="key === 'name' ? 2 : 3"
+              :maxlength="key === 'name' ? 150 : 300"
             />
           </label>
-          <label class="span-all">
-            {{ p.t('description') }}
-            <textarea v-model.trim="data.description" maxlength="2000" />
-          </label>
-          <label class="span-all">
-            {{ p.t('notes') }}
-            <textarea v-model.trim="data.notes" maxlength="1000" />
-          </label>
+          <details class="span-all field-group">
+            <summary>{{ p.t('optionalDetails') }}</summary>
+            <div class="form-grid">
+              <label v-for="key in ['province', 'district', 'sangkat'] as const" :key="key">
+                {{ p.t(key) }}
+                <input v-model.trim="data[key]" maxlength="80" />
+              </label>
+              <label class="span-all">
+                {{ p.t('description') }}
+                <textarea v-model.trim="data.description" maxlength="2000" />
+              </label>
+              <label class="span-all">
+                {{ p.t('notes') }}
+                <textarea v-model.trim="data.notes" maxlength="1000" />
+              </label>
+            </div>
+          </details>
         </div>
         <div v-if="step === 1" class="stack">
-          <p>{{ p.t('mapHint') }}</p>
-          <MapView picker :selected="selected" @pick="pick" />
-          <button type="button" class="btn outline" :disabled="store.gpsBusy" @click="gps">
-            {{ p.t('gps') }}
-          </button>
+          <LocationPicker v-model:latitude="data.latitude" v-model:longitude="data.longitude" />
           <div class="form-grid">
             <label>
               {{ p.t('latitude') }}
@@ -318,7 +316,7 @@ function back() {
         </div>
         <p v-if="error" class="error" role="alert">{{ p.t(error) }}</p>
         <div class="row between">
-          <button v-if="step" type="button" class="btn outline" :disabled="busy" @click="back">
+          <button v-if="step" type="button" class="btn outline" :disabled="busy" @click="back(step - 1)">
             {{ p.t('goBack') }}
           </button>
           <button class="btn primary" :disabled="busy || (step === 4 && !supports('post', endpoint))">

@@ -13,12 +13,12 @@ const route = useRoute(),
 const openMenu = ref<'account' | 'navigation' | null>(null)
 const accountButton = ref<HTMLButtonElement>()
 const navigationButton = ref<HTMLButtonElement>()
-const nav = [
+const nav = computed(() => [
   ['home', '/', 'house'],
   ['explore', '/explore', 'map'],
-  ['add', '/add-toilet', 'circle-plus'],
+  ['add', a.role === 'ADMIN' ? '/admin/toilets/new' : '/add-toilet', 'circle-plus'],
   ['about', '/about', 'info'],
-]
+])
 const accountPage = computed(() => (a.role === 'USER' ? '/dashboard' : landing(a.role)))
 function closeMenu() {
   openMenu.value = null

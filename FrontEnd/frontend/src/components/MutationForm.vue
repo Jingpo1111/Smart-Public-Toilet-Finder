@@ -6,6 +6,7 @@ import { usePrefs } from '../stores/preferences'
 import type { Method, Row } from '../types/api'
 import { idOf, imageURL } from '../services/records'
 import AssignmentPicker from './AssignmentPicker.vue'
+import LocationPicker from './LocationPicker.vue'
 import SchemaField from './SchemaField.vue'
 import { valueFor } from '../services/forms'
 import AppModal from './AppModal.vue'
@@ -19,6 +20,7 @@ const props = defineProps<{
     fixed?: Row
     keys?: string[]
     confirm?: boolean
+    inline?: boolean
     images?: Row[]
   }>(),
   emit = defineEmits<{ close: []; saved: []; conflict: [] }>()
@@ -33,6 +35,10 @@ const fields = computed(() =>
     .map(([key, s]) => ({ key, schema: resolveSchema(spec.value, s) })),
 )
 const values = reactive<Row>({})
+const displayFields = computed(() => props.inline
+  ? fields.value.filter(f => schema.value.required?.includes(f.key))
+  : fields.value)
+const optionalFields = computed(() => fields.value.filter(f => !schema.value.required?.includes(f.key)))
 for (const { key } of fields.value) {
   if (props.initial?.[key] != null) values[key] = JSON.parse(JSON.stringify(props.initial[key]))
 }
@@ -88,10 +94,21 @@ async function save() {
 }
 </script>
 <template>
-  <AppModal :title="p.t(title)" @close="!busy && emit('close')">
+  <component
+    :is="inline ? 'section' : AppModal"
+    v-bind="inline ? { class: 'panel' } : { title: p.t(title) }"
+    @close="!busy && emit('close')"
+  >
     <form class="stack" @submit.prevent="save">
       <template v-if="!confirming">
-        <template v-for="{ key, schema: s } in fields" :key="key">
+        <template v-for="{ key, schema: s } in displayFields" :key="key">
+          <LocationPicker
+            v-if="
+              path === '/admin/toilets' && method === 'post' && key === 'latitude' && schema.properties?.longitude
+            "
+            v-model:latitude="values.latitude"
+            v-model:longitude="values.longitude"
+          />
           <AssignmentPicker
             v-if="path === '/admin/manager-assignments' && ['managerId', 'toiletId'].includes(key)"
             v-model="values[key]"
@@ -109,6 +126,18 @@ async function save() {
             "
           />
         </template>
+        <details v-if="inline && optionalFields.length" class="field-group">
+          <summary>{{ p.t('optionalDetails') }}</summary>
+          <div class="stack">
+            <SchemaField
+              v-for="field in optionalFields"
+              :key="field.key"
+              v-model="values[field.key]"
+              :field="field.key"
+              :schema="field.schema"
+            />
+          </div>
+        </details>
         <div v-if="images?.length" class="stack">
           <strong>{{ p.t('publishPhotos') }}</strong>
           <div v-for="img in images" :key="idOf(img)" class="row approval-photo">
@@ -150,5 +179,5 @@ async function save() {
         </button>
       </div>
     </form>
-  </AppModal>
+  </component>
 </template>

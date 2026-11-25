@@ -62,6 +62,8 @@
   "map": "Map",
   "filters": "Filters",
   "clear": "Clear filters",
+  "resetSearch": "Clear search and filters",
+  "optionalDetails": "More details (optional)",
   "apply": "Apply filters",
   "any": "Any",
   "access": "Entry fee",

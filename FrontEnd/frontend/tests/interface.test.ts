@@ -13,6 +13,7 @@ import km from '../src/locales/km.json'
 import PublicLayout from '../src/layouts/PublicLayout.vue'
 import { useAccount } from '../src/stores/account'
 import HomeView from '../src/views/HomeView.vue'
+import ExploreView from '../src/views/ExploreView.vue'
 import ImageUploader from '../src/components/ImageUploader.vue'
 import AddToiletView from '../src/views/AddToiletView.vue'
 import WorkspaceView from '../src/views/WorkspaceView.vue'
@@ -184,6 +185,25 @@ describe('public pages and preferences', () => {
     expect(s.origin).toBeUndefined()
     expect(s.gpsBusy).toBe(false)
   })
+  it('keeps the search term when clearing filters and can reset an empty search', async () => {
+    const r = router()
+    await r.push('/explore?q=Riverside&category=free')
+    respond(() => [])
+    const w = mount(ExploreView, { global: { plugins: [pinia(), r], stubs } })
+    wrappers.push(w)
+    await flushPromises()
+    await w.get('.toolbar button').trigger('click')
+    const dialog = document.querySelector('dialog')!
+    const clear = Array.from(dialog.querySelectorAll('button')).find(b => b.textContent === en.clear)!
+    clear.click()
+    dialog.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    await flushPromises()
+    const input = w.get<HTMLInputElement>('input[type=search]')
+    expect(input.element.value).toBe('Riverside')
+    expect(w.get('.toolbar button').text()).toBe(en.filters)
+    await w.findAll('button').find(b => b.text() === en.resetSearch)!.trigger('click')
+    expect(input.element.value).toBe('')
+  })
   it('labels missing facility photos and does not infer open-now', async () => {
     const r = router()
     await r.push('/')
@@ -279,6 +299,10 @@ describe('photos and submission', () => {
     await w.get('form').trigger('submit')
     await w.findAll('input[type=number]')[0].setValue('11.55')
     await w.findAll('input[type=number]')[1].setValue('104.92')
+    await w.get('.steps button').trigger('click')
+    expect(w.get<HTMLInputElement>('input').element.value).toBe('Test only')
+    await w.get('form').trigger('submit')
+    expect(w.get<HTMLInputElement>('input[type=number]').element.value).toBe('11.55')
     await w.get('form').trigger('submit')
     await w.get('form').trigger('submit')
     await w.get('form').trigger('submit')

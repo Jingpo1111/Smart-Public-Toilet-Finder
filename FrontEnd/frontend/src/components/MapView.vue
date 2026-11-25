@@ -136,8 +136,8 @@ onBeforeUnmount(() => {
   <div class="map-frame">
     <div ref="el" class="leaflet-map" :aria-label="p.t('map')"></div>
     <div class="map-zoom">
-      <button :aria-label="p.t('zoomIn')" @click="map.setZoom(map.getZoom() + 1)">+</button>
-      <button :aria-label="p.t('zoomOut')" @click="map.setZoom(map.getZoom() - 1)">−</button>
+      <button type="button" :aria-label="p.t('zoomIn')" @click="map.setZoom(map.getZoom() + 1)">+</button>
+      <button type="button" :aria-label="p.t('zoomOut')" @click="map.setZoom(map.getZoom() - 1)">−</button>
     </div>
     <small v-if="tileError" class="map-warning">{{ p.t('mapTiles') }}</small>
   </div>

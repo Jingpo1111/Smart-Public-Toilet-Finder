@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
 import { usePrefs, statusKey } from '../stores/preferences'
 import Icon from '../components/Icon.vue'
 defineProps<{ scope: string; nav: string[][]; title: string }>()
-const p = usePrefs(),
-  collapsed = ref(false)
+const p = usePrefs()
+const narrowScreen = window.matchMedia?.('(max-width: 760px)')
+const collapsed = ref(narrowScreen?.matches ?? false)
+function adaptMenu(event: MediaQueryListEvent) {
+  collapsed.value = event.matches
+}
+narrowScreen?.addEventListener('change', adaptMenu)
+onBeforeUnmount(() => narrowScreen?.removeEventListener('change', adaptMenu))
 </script>
 <template>
   <div class="wrap page workspace">
     <aside>
-      <button class="text-link" :aria-expanded="!collapsed" @click="collapsed = !collapsed">
+      <button class="text-link" aria-controls="workspace-navigation" :aria-expanded="!collapsed" @click="collapsed = !collapsed">
         <Icon name="menu" />
         {{ p.t(scope) }}
       </button>
-      <nav v-show="!collapsed" class="sidebar">
+      <nav v-show="!collapsed" id="workspace-navigation" class="sidebar" :aria-label="p.t(scope)">
         <template v-for="[label, url, icon] in nav" :key="url">
           <RouterLink :to="url">
             <Icon :name="icon" :size="17" />

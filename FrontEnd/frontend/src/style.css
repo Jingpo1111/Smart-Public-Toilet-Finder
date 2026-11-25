@@ -1539,9 +1539,16 @@ td img {
     grid-template-columns: 1fr;
   }
   .sidebar {
-    display: flex;
-    overflow: auto;
-    white-space: nowrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  }
+  .sidebar .subnav {
+    grid-column: 1 / -1;
+  }
+  .workspace aside > button,
+  .sidebar a,
+  .steps button {
+    min-height: 44px;
   }
   .auth-art img {
     width: 120px;

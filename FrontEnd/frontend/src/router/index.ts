@@ -80,7 +80,7 @@ const routes: RouteRecordRaw[] = [
   ),
   ...[
     ...adminNav,
-    ['locations', '/admin/toilets/new'],
+    ['add', '/admin/toilets/new'],
     ['locations', '/admin/toilets/:id'],
     ['submissions', '/admin/submissions/:id'],
   ].map(([title, path]) => ({

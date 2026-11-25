@@ -33,6 +33,7 @@ const router = () =>
     history: createMemoryHistory(),
     routes: [
       { path: '/toilets/:id', component: { template: '<div/>' } },
+      { path: '/admin/toilets/new', meta: { title: 'add' }, component: WorkspaceView },
       { path: '/manager/toilets/:id', meta: { title: 'assigned' }, component: { template: '<div/>' } },
       { path: '/:pathMatch(.*)*', component: { template: '<div/>' } },
     ],
@@ -104,6 +105,61 @@ describe('the exported NestJS contract', () => {
   })
 })
 describe('map, photos and authenticated interactions', () => {
+  it('submits the location picked on the admin creation map with manual adjustments', async () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('max-width'),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }))
+    acceptTokens({ accessToken: 'admin' })
+    const send = vi.fn()
+    api.defaults.adapter = async (config) => {
+      send(config.method, config.url, JSON.parse(config.data))
+      return { config, status: 201, statusText: 'Created', headers: new AxiosHeaders(), data: {} }
+    }
+    const r = router()
+    await r.push('/admin/toilets/new')
+    const w = mount(WorkspaceView, {
+      attachTo: document.body,
+      global: { plugins: [pinia(), r] },
+    })
+    try {
+      await flushPromises()
+      expect(w.get('h1').text()).toBe(en.add)
+      const nav = w.get('#workspace-navigation')
+      expect(nav.isVisible()).toBe(false)
+      await w.get('button[aria-controls="workspace-navigation"]').trigger('click')
+      expect(nav.isVisible()).toBe(true)
+      const form = w.get('form')
+      const basic = form.findAll('input[type=text][required]')
+      await basic[0].setValue('WC')
+      await basic[1].setValue('Test street')
+      const map = w.getComponent(MapView)
+      expect(map.props('selected')).toBeUndefined()
+      await map.get('.map-zoom button').trigger('click')
+      expect(send).not.toHaveBeenCalled()
+      await map.get('.leaflet-map').trigger('click', { clientX: 10, clientY: 15 })
+      const latitude = form.get<HTMLInputElement>('input[min="9.5"]')
+      const longitude = form.get<HTMLInputElement>('input[min="102.2"]')
+      const lat = latitude.element.valueAsNumber
+      await flushPromises()
+      expect(latitude.element.validity.valid).toBe(true)
+      expect(map.props('selected')).toEqual([lat, longitude.element.valueAsNumber])
+      await longitude.setValue('104.912345')
+      expect(map.props('selected')).toEqual([lat, 104.912345])
+      await form.trigger('submit')
+      await flushPromises()
+      expect(send).toHaveBeenCalledWith('post', '/admin/toilets', {
+        name: 'WC',
+        address: 'Test street',
+        latitude: lat,
+        longitude: 104.912345,
+      })
+      expect(r.currentRoute.value.path).toBe('/admin/toilets')
+    } finally {
+      w.unmount()
+    }
+  })
   it('mounts a Leaflet picker, emits a selected point and cleans up the map', async () => {
     const w = mount(MapView, {
       attachTo: document.body,

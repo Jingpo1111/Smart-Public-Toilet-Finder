@@ -41,11 +41,12 @@ const switches = [
   ['soap', 'soap'],
   ['rated', 'rated'],
 ] as const
+const filterCount = computed(() => Object.entries(f).filter(([key, value]) => key !== 'q' && value).length)
 async function gps() {
   try {
     await store.locate()
-    f.radius ||= 2
-    if (showFilters.value) draft.radius = f.radius
+    if (showFilters.value) draft.radius ||= 2
+    else f.radius ||= 2
   } catch {
     p.toast('gpsDenied')
   }
@@ -89,11 +90,11 @@ function applyFilters() {
       </label>
       <button class="btn outline" @click="editFilters">
         <Icon name="list-filter" />
-        {{ p.t('filters') }}
+        {{ p.t('filters') }}<span v-if="filterCount"> ({{ filterCount }})</span>
       </button>
       <button class="btn outline" :disabled="store.gpsBusy" @click="gps">
         <Icon name="locate-fixed" />
-        {{ p.t('gps') }}
+        {{ p.t(store.gpsBusy ? 'locating' : 'gps') }}
       </button>
       <div class="segmented">
         <button v-for="s in ['map', 'list']" :key="s" :aria-pressed="mode === s" @click="mode = s">
@@ -115,7 +116,14 @@ function applyFilters() {
           :retry="store.phase === 'error'"
           @retry="store.load(true, { ...f })"
         />
-        <div v-else class="card-grid">
+        <button
+          v-if="store.phase === 'ok' && !results.length && (f.q || filterCount)"
+          class="btn outline"
+          @click="Object.assign(f, emptyFilters())"
+        >
+          {{ p.t('resetSearch') }}
+        </button>
+        <div v-if="store.phase === 'ok' && results.length" class="card-grid">
           <ToiletCard
             v-for="wc in results.slice((page - 1) * 9, page * 9)"
             :key="wc.id"
@@ -160,11 +168,11 @@ function applyFilters() {
           <option v-for="n in [1, 2, 5, 10, 20]" :key="n" :value="n">{{ n }} km</option>
         </select>
       </label>
-      <button v-if="!store.origin" type="button" class="text-link" @click="gps">
-        {{ p.t('gps') }}
+      <button v-if="!store.origin" type="button" class="text-link" :disabled="store.gpsBusy" @click="gps">
+        {{ p.t(store.gpsBusy ? 'locating' : 'gps') }}
       </button>
       <div class="row between">
-        <button type="button" class="btn outline" @click="Object.assign(draft, emptyFilters())">
+        <button type="button" class="btn outline" @click="Object.assign(draft, emptyFilters(), { q: f.q })">
           {{ p.t('clear') }}
         </button>
         <button class="btn primary">{{ p.t('apply') }}</button>

@@ -380,6 +380,7 @@ async function saved() {
     void publicData.load()
   }
   if (create) {
+    ownerOf('/admin/toilets').invalidate()
     await router.replace('/admin/toilets')
     return
   }
@@ -423,7 +424,7 @@ function reviewConflict() {
     <section class="stack min-w-0">
       <div class="section-head">
         <h1>{{ p.t(title) }}</h1>
-        <button class="btn outline" @click="load(true)">
+        <button v-if="!create" class="btn outline" @click="load(true)">
           <Icon name="rotate-ccw" :size="15" />
           {{ p.t('refresh') }}
         </button>
@@ -573,14 +574,21 @@ function reviewConflict() {
         </button>
         <RouterLink class="text-link" to="/profile">{{ p.t('profile') }}</RouterLink>
       </div>
-      <div v-else-if="title === 'changePassword' || create" class="panel">
-        <button
-          class="btn primary"
-          @click="
-            create ? launch({ title: 'add', method: 'post', path: '/admin/toilets' }) : passwordAction()
-          "
-        >
-          {{ p.t(create ? 'add' : 'changePassword') }}
+      <template v-else-if="create">
+        <MutationForm
+          v-if="supports('post', '/admin/toilets')"
+          inline
+          title="add"
+          method="post"
+          path="/admin/toilets"
+          @close="router.push('/admin/toilets')"
+          @saved="saved"
+        />
+        <p v-else class="notice">{{ p.t('unsupported') }}</p>
+      </template>
+      <div v-else-if="title === 'changePassword'" class="panel">
+        <button class="btn primary" @click="passwordAction">
+          {{ p.t('changePassword') }}
         </button>
       </div>
       <template v-else-if="detail">
