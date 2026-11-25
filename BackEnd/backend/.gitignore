@@ -1,0 +1,20 @@
+# Dependencies & build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Generated Prisma client (re-created by `npm install` / `npx prisma generate`)
+src/generated/
+
+# Environment — never commit real secrets
+.env
+.env.*
+!.env.example
+
+# Logs & OS files
+*.log
+npm-debug.log*
+.DS_Store
+.idea/
+.vscode/

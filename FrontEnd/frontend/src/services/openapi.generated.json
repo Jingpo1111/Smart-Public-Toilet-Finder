@@ -1,0 +1,2845 @@
+{
+  "version": "1.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {}
+    },
+    "/api/me/notifications": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "unreadOnly",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/api/me/notifications/unread-count": {
+      "get": {}
+    },
+    "/api/me/notifications/read-all": {
+      "patch": {}
+    },
+    "/api/me/notifications/{id}/read": {
+      "patch": {}
+    },
+    "/api/me/profile": {
+      "get": {},
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/summary": {
+      "get": {}
+    },
+    "/api/auth/register": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {}
+    },
+    "/api/auth/logout": {
+      "post": {}
+    },
+    "/api/auth/logout-all": {
+      "post": {}
+    },
+    "/api/auth/me": {
+      "get": {}
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/change-password": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/toilets": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "province",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "district",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "sangkat",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "accessType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FREE",
+                "PAID",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "free",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "maxPrice",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "openNow",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "wheelchairAccessible",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hasWater",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hasSoap",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "babyChanging",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "minRating",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          {
+            "in": "query",
+            "name": "minCleanliness",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 50000
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "distance",
+                "rating",
+                "cleanliness",
+                "name",
+                "newest",
+                "price"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/api/toilets/nearby": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "province",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "district",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "sangkat",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "accessType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FREE",
+                "PAID",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "free",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "maxPrice",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "openNow",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "wheelchairAccessible",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hasWater",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hasSoap",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "babyChanging",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "minRating",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          {
+            "in": "query",
+            "name": "minCleanliness",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 20000
+            }
+          }
+        ]
+      }
+    },
+    "/api/toilets/districts": {
+      "get": {}
+    },
+    "/api/toilets/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/api/toilets/{id}/images": {
+      "get": {}
+    },
+    "/api/uploads/suggestions": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiImageUploadSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/uploads/suggestions/{id}": {
+      "delete": {}
+    },
+    "/api/uploads/reports": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiImageUploadSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/uploads/reports/{id}": {
+      "delete": {}
+    },
+    "/api/uploads/toilets": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ToiletImageUploadSchema"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/uploads/avatar": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AvatarUploadSchema"
+              }
+            }
+          }
+        }
+      },
+      "delete": {}
+    },
+    "/api/toilet-suggestions": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSuggestionDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/toilet-suggestions": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/api/me/toilet-suggestions/{id}": {
+      "get": {}
+    },
+    "/api/toilets/{id}/reviews": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "highest",
+                "lowest"
+              ]
+            }
+          }
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/{id}": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewDto"
+              }
+            }
+          }
+        }
+      },
+      "delete": {}
+    },
+    "/api/me/reviews": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "highest",
+                "lowest"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/api/toilets/{id}/reports": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/reports": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "RESOLVED",
+                "REJECTED"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/api/me/reports/{id}": {
+      "get": {}
+    },
+    "/api/me/favorites": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ]
+      }
+    },
+    "/api/me/favorites/{toiletId}": {
+      "post": {},
+      "delete": {}
+    },
+    "/api/stats": {
+      "get": {}
+    },
+    "/api/manager/dashboard": {
+      "get": {}
+    },
+    "/api/manager/toilets": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}": {
+      "get": {},
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManagerUpdateToiletDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manager/toilets/{id}/images": {
+      "get": {}
+    },
+    "/api/manager/toilets/{id}/cover": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCoverDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manager/toilets/{id}/images/{imageId}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "reason",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300
+            }
+          }
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/qr": {
+      "get": {}
+    },
+    "/api/manager/cleaning-schedules": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dayOfWeek",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 6
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/cleaning-schedules": {
+      "get": {},
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCleaningScheduleDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manager/cleaning-schedules/{scheduleId}": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCleaningScheduleDto"
+              }
+            }
+          }
+        }
+      },
+      "delete": {}
+    },
+    "/api/manager/cleaning-logs": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/manager/toilets/{id}/cleaning-logs": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCleaningLogDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manager/reports": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "RESOLVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DIRTY",
+                "NO_WATER",
+                "NO_SOAP",
+                "BROKEN_DOOR",
+                "BROKEN_EQUIPMENT",
+                "INCORRECT_LOCATION",
+                "INCORRECT_PRICE",
+                "CLOSED",
+                "OTHER"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "unresolved",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/api/manager/reports/{id}": {
+      "get": {}
+    },
+    "/api/manager/reports/{id}/status": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReportStatusDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/dashboard": {
+      "get": {}
+    },
+    "/api/admin/analytics": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "months",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 36
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "USER",
+                "MANAGER",
+                "ADMIN"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "isActive",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/users/{id}": {
+      "get": {}
+    },
+    "/api/admin/users/{id}/role": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeRoleDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{id}/status": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeUserStatusDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/suggestions": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "district",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "hasPotentialDuplicate",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "contributorId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/suggestions/{id}": {
+      "get": {}
+    },
+    "/api/admin/suggestions/{id}/status": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewSuggestionDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/suggestions/{id}/images/{imageId}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "reason",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/toilets": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "CLOSED",
+                "UNDER_MAINTENANCE"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "accessType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FREE",
+                "PAID",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "district",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "in": "query",
+            "name": "archived",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "exclude",
+                "include",
+                "only"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "isVerified",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "managerId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "name",
+                "rating",
+                "updated"
+              ]
+            }
+          }
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateToiletDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/toilets/{id}": {
+      "get": {},
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUpdateToiletDto"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "reason",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/toilets/{id}/restore": {
+      "post": {}
+    },
+    "/api/admin/toilets/{id}/verify": {
+      "post": {}
+    },
+    "/api/admin/toilets/{id}/images": {
+      "get": {}
+    },
+    "/api/admin/toilets/{id}/cover": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCoverDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/toilets/{id}/images/{imageId}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "reason",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 300
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/manager-assignments": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "managerId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssignmentDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/manager-assignments/{id}": {
+      "delete": {}
+    },
+    "/api/admin/reports": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "IN_PROGRESS",
+                "RESOLVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DIRTY",
+                "NO_WATER",
+                "NO_SOAP",
+                "BROKEN_DOOR",
+                "BROKEN_EQUIPMENT",
+                "INCORRECT_LOCATION",
+                "INCORRECT_PRICE",
+                "CLOSED",
+                "OTHER"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "unresolved",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/reports/{id}": {
+      "get": {}
+    },
+    "/api/admin/reports/{id}/status": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReportStatusDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/reviews": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "toiletId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "userId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isHidden",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/reviews/{id}/moderation": {
+      "patch": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerateReviewDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/reviews/{id}": {
+      "delete": {}
+    },
+    "/api/admin/audit-logs": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "entityType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 60
+            }
+          },
+          {
+            "in": "query",
+            "name": "entityId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          {
+            "in": "query",
+            "name": "actorId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferredLanguage": {
+            "type": "string",
+            "enum": [
+              "EN",
+              "KM"
+            ]
+          }
+        }
+      },
+      "RegisterDto": {
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "phone": {
+            "type": "string"
+          },
+          "preferredLanguage": {
+            "type": "string",
+            "enum": [
+              "EN",
+              "KM"
+            ]
+          }
+        }
+      },
+      "LoginDto": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          }
+        }
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "required": [
+          "token",
+          "newPassword"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "MultiImageUploadSchema": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "ToiletImageUploadSchema": {
+        "type": "object",
+        "required": [
+          "toiletId",
+          "files"
+        ],
+        "properties": {
+          "toiletId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "setAsCover": {
+            "type": "boolean"
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "AvatarUploadSchema": {
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "CreateSuggestionDto": {
+        "type": "object",
+        "required": [
+          "name",
+          "address",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8
+          },
+          "accessType": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ]
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "imageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "coverImageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "resubmittedFromId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "retainedImageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "CreateReviewDto": {
+        "type": "object",
+        "required": [
+          "rating",
+          "cleanlinessRating"
+        ],
+        "properties": {
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        }
+      },
+      "UpdateReviewDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "cleanlinessRating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        }
+      },
+      "CreateReportDto": {
+        "type": "object",
+        "required": [
+          "category",
+          "description"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "DIRTY",
+              "NO_WATER",
+              "NO_SOAP",
+              "BROKEN_DOOR",
+              "BROKEN_EQUIPMENT",
+              "INCORRECT_LOCATION",
+              "INCORRECT_PRICE",
+              "CLOSED",
+              "OTHER"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 2000
+          },
+          "imageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "ManagerUpdateToiletDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "accessType": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ]
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ]
+          },
+          "descriptionKm": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "SetCoverDto": {
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateCleaningScheduleDto": {
+        "type": "object",
+        "required": [
+          "dayOfWeek",
+          "startTime"
+        ],
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "startTime": {
+            "type": "string"
+          },
+          "assignedTo": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateCleaningScheduleDto": {
+        "type": "object",
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "startTime": {
+            "type": "string"
+          },
+          "assignedTo": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateCleaningLogDto": {
+        "type": "object",
+        "properties": {
+          "cleanedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "waterRefilled": {
+            "type": "boolean"
+          },
+          "soapRefilled": {
+            "type": "boolean"
+          },
+          "paperRefilled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateReportStatusDto": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "RESOLVED",
+              "REJECTED"
+            ]
+          },
+          "resolutionNote": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "ChangeRoleDto": {
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "MANAGER",
+              "ADMIN"
+            ]
+          }
+        }
+      },
+      "ChangeUserStatusDto": {
+        "type": "object",
+        "required": [
+          "isActive"
+        ],
+        "properties": {
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReviewSuggestionDto": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "rejectionReason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          },
+          "reviewNote": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "corrections": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SuggestionCorrectionsDto"
+              }
+            ]
+          },
+          "publishImageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "coverImageId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "AdminCreateToiletDto": {
+        "type": "object",
+        "required": [
+          "name",
+          "address",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8
+          },
+          "accessType": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ]
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ]
+          },
+          "descriptionKm": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "AdminUpdateToiletDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8
+          },
+          "accessType": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ]
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ]
+          },
+          "descriptionKm": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "CreateAssignmentDto": {
+        "type": "object",
+        "required": [
+          "managerId",
+          "toiletId"
+        ],
+        "properties": {
+          "managerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "toiletId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ModerateReviewDto": {
+        "type": "object",
+        "required": [
+          "isHidden"
+        ],
+        "properties": {
+          "isHidden": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "FacilitiesDto": {
+        "type": "object",
+        "properties": {
+          "hasWater": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasSoap": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "wheelchairAccessible": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "babyChanging": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasToiletPaper": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hasHandDryer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isGenderNeutral": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "OpeningHourDto": {
+        "type": "object",
+        "required": [
+          "dayOfWeek"
+        ],
+        "properties": {
+          "dayOfWeek": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "opensAt": {
+            "type": "string"
+          },
+          "closesAt": {
+            "type": "string"
+          },
+          "is24Hours": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SuggestionCorrectionsDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "nameKm": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          },
+          "province": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "sangkat": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 80
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": 9.5,
+            "maximum": 14.8
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": 102.2,
+            "maximum": 107.8
+          },
+          "accessType": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "PAID",
+              "UNKNOWN"
+            ]
+          },
+          "priceKhr": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "facilities": {
+            "$ref": "#/components/schemas/FacilitiesDto"
+          },
+          "openingHours": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourDto"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "UNDER_MAINTENANCE"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
