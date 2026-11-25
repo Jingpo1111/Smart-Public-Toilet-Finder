@@ -42,13 +42,13 @@ VITE_API_BASE_URL_PUBLIC=/api
 | `VITE_API_BASE_URL_LOCAL` | `npm run dev` | Your local NestJS URL, including its port and `/api`. |
 | `VITE_API_BASE_URL_PUBLIC` | `npm run build` | `/api` on the public site’s domain, or the full HTTPS URL of a separately hosted backend. |
 
-Restart Vite after editing the local address. Rebuild the frontend after changing the public address. `npm run preview` serves the production build with the public address selected at build time.
+Restart Vite after editing the local address. For Vercel Git deployments, set the project's Root Directory to `FrontEnd/frontend`. Include its public `.env` and `vercel.json` in Git. Each deployment reads `VITE_API_BASE_URL_PUBLIC` from that revision of `.env`, even when older API values exist in the Vercel dashboard. To change the deployed address, edit the file and push to the deployment branch. `npm run preview` serves the address selected at build time.
 
 ## API configuration
 
 Development reads the OpenAPI document from the local backend at `/api/docs-json`. Production uses the checked-in contract generated from the NestJS application. An operation must be present in the contract before the UI can call it.
 
-- An explicit `VITE_API_BASE_URL` in the shell or hosting build environment overrides the mode selection.
+- Outside the Vercel build, an explicit `VITE_API_BASE_URL` in the shell overrides the mode selection.
 - Set `VITE_OPENAPI_URL` to use a different export URL, or `VITE_API_CONTRACT=bundled` to use the checked-in contract.
 - Regenerate the frontend contract after backend changes with `npm run sync:api -- /path/to/openapi.json`.
 - Keep database, mail, storage keys and JWT signing secrets in the backend environment. Vite's `VITE_*` variables are public.

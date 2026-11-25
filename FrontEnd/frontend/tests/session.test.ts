@@ -30,6 +30,7 @@ beforeEach(() => {
   checked.value = true
   spec.value = {
     paths: {
+      '/api/health': { get: {} },
       '/auth/login': {
         post: {
           requestBody: {
@@ -48,6 +49,16 @@ beforeEach(() => {
   }
 })
 describe('authenticated requests', () => {
+  it('reads public health without a session or credentials', async () => {
+    const health = { status: 'ok' }
+    api.defaults.adapter = async (config) => {
+      expect(config.url).toBe('/health')
+      expect(config.withCredentials).toBe(false)
+      expect(config.headers.has('Authorization')).toBe(false)
+      return answer(config, health)
+    }
+    await expect(request('get', '/health')).resolves.toEqual({ success: true, data: health })
+  })
   it('uses the identity endpoint for role and never persists an access token', async () => {
     api.defaults.adapter = async (c) =>
       answer(

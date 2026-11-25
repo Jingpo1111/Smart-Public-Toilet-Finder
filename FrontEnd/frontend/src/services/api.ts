@@ -189,7 +189,7 @@ export async function request(method: Method, path: string, options: Options = {
     options.auth ??
     !(
       (path.startsWith('/auth/') && !['/auth/me', '/auth/logout'].includes(path)) ||
-      (method === 'get' && path.startsWith('/toilets'))
+      (method === 'get' && (path === '/health' || path.startsWith('/toilets')))
     )
   if (auth && !token) throw new Error('expired')
   const isForm = options.body instanceof FormData
