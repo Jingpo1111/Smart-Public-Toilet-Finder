@@ -53,6 +53,15 @@ body {
   font-size: 15px;
   line-height: 1.55;
 }
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+#main {
+  flex: 1 0 auto;
+}
 button,
 a,
 input,
@@ -88,6 +97,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
+.searchbox:focus-within,
 .file-btn:focus-within {
   outline: 3px solid #358dec;
   outline-offset: 3px;
@@ -325,10 +335,13 @@ small {
 .bottomnav {
   display: none;
 }
+.header-dropdown {
+  position: relative;
+}
 .menubox {
   position: absolute;
   right: 0;
-  top: calc(100% - 5px);
+  top: calc(100% + 8px);
   min-width: 200px;
   padding: 7px;
   display: grid;
@@ -736,6 +749,10 @@ small {
 }
 .searchbox input {
   color: var(--ink);
+  align-self: stretch;
+}
+.searchbox input:focus-visible {
+  outline: none;
 }
 .explorer.map {
   display: grid;
@@ -933,17 +950,17 @@ small {
 .panel h2 {
   font-size: 24px;
 }
-.stack label:not(.check, .btn),
-.form-grid label:not(.check, .btn) {
+.stack label:not(.check, .btn, .searchbox),
+.form-grid label:not(.check, .btn, .searchbox) {
   display: grid;
   gap: 5px;
   font-weight: 600;
   font-size: 14px;
 }
-.stack input:not([type='checkbox'], [type='file']),
+.stack input:not([type='checkbox'], [type='file'], .searchbox > input),
 .stack select,
 .stack textarea,
-.form-grid input,
+.form-grid input:not(:where(.searchbox > input)),
 .form-grid select,
 .form-grid textarea,
 .field {

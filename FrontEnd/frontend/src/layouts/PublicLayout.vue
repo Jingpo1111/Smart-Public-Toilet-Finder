@@ -9,8 +9,10 @@ import { failure, sessionVersion } from '../services/api'
 const route = useRoute(),
   router = useRouter(),
   p = usePrefs(),
-  a = useAccount(),
-  menu = ref(false)
+  a = useAccount()
+const openMenu = ref<'account' | 'navigation' | null>(null)
+const accountButton = ref<HTMLButtonElement>()
+const navigationButton = ref<HTMLButtonElement>()
 const nav = [
   ['home', '/', 'house'],
   ['explore', '/explore', 'map'],
@@ -18,12 +20,34 @@ const nav = [
   ['about', '/about', 'info'],
 ]
 const accountPage = computed(() => (a.role === 'USER' ? '/dashboard' : landing(a.role)))
-watch(
-  () => route.fullPath,
-  () => {
-    menu.value = false
-  },
-)
+function closeMenu() {
+  openMenu.value = null
+}
+function toggleMenu(menu: 'account' | 'navigation') {
+  openMenu.value = openMenu.value === menu ? null : menu
+}
+watch([() => route.fullPath, () => a.user?.id], closeMenu)
+watch(openMenu, (menu, _, onCleanup) => {
+  if (!menu) return
+  const button = menu === 'account' ? accountButton.value : navigationButton.value
+  function closeOutside(event: Event) {
+    if (event.target instanceof Node && !button?.parentElement?.contains(event.target)) closeMenu()
+  }
+  function onEscape(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      closeMenu()
+      button?.focus()
+    }
+  }
+  document.addEventListener('pointerdown', closeOutside)
+  document.addEventListener('focusin', closeOutside)
+  document.addEventListener('keydown', onEscape)
+  onCleanup(() => {
+    document.removeEventListener('pointerdown', closeOutside)
+    document.removeEventListener('focusin', closeOutside)
+    document.removeEventListener('keydown', onEscape)
+  })
+})
 watch(sessionVersion, () => {
   if (route.meta.requiresAuth && !a.user)
     void router.replace({ path: '/login', query: { redirect: route.fullPath } })
@@ -34,7 +58,7 @@ async function logout() {
   } catch (e) {
     p.toast(failure(e))
   } finally {
-    menu.value = false
+    closeMenu()
     await router.replace('/')
   }
 }
@@ -71,27 +95,41 @@ async function logout() {
           <Icon name="log-in" :size="16" />
           {{ p.t('login') }}
         </RouterLink>
-        <button v-else class="btn primary small" @click="menu = !menu" :aria-expanded="menu">
-          <Icon name="user" :size="16" />
-          {{ p.t('account') }}
-        </button>
-        <button
-          class="mobile-menu iconbtn"
-          :aria-label="p.t('menu')"
-          :aria-expanded="menu"
-          @click="menu = !menu"
-        >
-          <Icon name="menu" />
-        </button>
-      </div>
-      <div v-if="menu" class="menubox">
-        <RouterLink v-for="[key, path] in nav" :key="path" :to="path">{{ p.t(key) }}</RouterLink>
-        <RouterLink v-if="a.user" :to="accountPage">{{ p.t('dashboard') }}</RouterLink>
-        <RouterLink v-if="a.user" to="/notifications">{{ p.t('notifications') }}</RouterLink>
-        <RouterLink v-if="a.user" :to="a.role === 'MANAGER' ? '/manager/profile' : '/profile'">
-          {{ p.t('profile') }}
-        </RouterLink>
-        <button v-if="a.user" @click="logout">{{ p.t('logout') }}</button>
+        <div v-else class="header-dropdown">
+          <button
+            ref="accountButton"
+            class="btn primary small"
+            aria-controls="account-links"
+            :aria-expanded="openMenu === 'account'"
+            @click="toggleMenu('account')"
+          >
+            <Icon name="user" :size="16" />
+            {{ p.t('account') }}
+          </button>
+          <div v-show="openMenu === 'account'" id="account-links" class="menubox" @click="closeMenu">
+            <RouterLink :to="accountPage">{{ p.t('dashboard') }}</RouterLink>
+            <RouterLink to="/notifications">{{ p.t('notifications') }}</RouterLink>
+            <RouterLink :to="a.role === 'MANAGER' ? '/manager/profile' : '/profile'">
+              {{ p.t('profile') }}
+            </RouterLink>
+            <button @click="logout">{{ p.t('logout') }}</button>
+          </div>
+        </div>
+        <div class="header-dropdown mobile-menu">
+          <button
+            ref="navigationButton"
+            class="iconbtn"
+            :aria-label="p.t('menu')"
+            aria-controls="navigation-links"
+            :aria-expanded="openMenu === 'navigation'"
+            @click="toggleMenu('navigation')"
+          >
+            <Icon :name="openMenu === 'navigation' ? 'x' : 'menu'" />
+          </button>
+          <nav v-show="openMenu === 'navigation'" id="navigation-links" class="menubox" :aria-label="p.t('menu')" @click="closeMenu">
+            <RouterLink v-for="[key, path] in nav" :key="path" :to="path">{{ p.t(key) }}</RouterLink>
+          </nav>
+        </div>
       </div>
     </div>
   </header>

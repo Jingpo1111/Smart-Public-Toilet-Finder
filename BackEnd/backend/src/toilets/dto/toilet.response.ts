@@ -66,6 +66,7 @@ export class ToiletSummaryResponse {
   /** null when opening hours are unknown */
   openNow: boolean | null;
   openingHoursKnown: boolean;
+  @ApiProperty({ type: () => ImageAccessResponse, nullable: true, description: 'null when the WC has no photo' })
   coverImage: ImageAccessResponse | null;
   /** Present only when lat/lng were supplied */
   distance?: DistanceResponse;

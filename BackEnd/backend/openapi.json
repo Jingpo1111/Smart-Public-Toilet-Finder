@@ -4523,6 +4523,37 @@
           "newPassword"
         ]
       },
+      "ImageAccessResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Short-lived signed URL. Do not store it; refetch the resource after `expiresAt`."
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number",
+            "nullable": true
+          },
+          "height": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "expiresAt"
+        ]
+      },
       "FacilitiesResponse": {
         "type": "object",
         "properties": {
@@ -4565,37 +4596,6 @@
           "isGenderNeutral"
         ]
       },
-      "ImageAccessResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string",
-            "description": "Short-lived signed URL. Do not store it; refetch the resource after `expiresAt`."
-          },
-          "expiresAt": {
-            "type": "string"
-          },
-          "mimeType": {
-            "type": "string"
-          },
-          "width": {
-            "type": "number",
-            "nullable": true
-          },
-          "height": {
-            "type": "number",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "url",
-          "expiresAt"
-        ]
-      },
       "DistanceResponse": {
         "type": "object",
         "properties": {
@@ -4636,6 +4636,16 @@
               "UNDER_MAINTENANCE"
             ],
             "type": "string"
+          },
+          "coverImage": {
+            "nullable": true,
+            "description": "null when the WC has no photo",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageAccessResponse"
+              }
+            ]
           },
           "id": {
             "type": "string"
@@ -4702,15 +4712,6 @@
           "openingHoursKnown": {
             "type": "boolean"
           },
-          "coverImage": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ImageAccessResponse"
-              }
-            ]
-          },
           "distance": {
             "description": "Present only when lat/lng were supplied",
             "allOf": [
@@ -4727,6 +4728,7 @@
         "required": [
           "accessType",
           "status",
+          "coverImage",
           "id",
           "name",
           "nameKm",
@@ -4745,7 +4747,6 @@
           "lastVerifiedAt",
           "openNow",
           "openingHoursKnown",
-          "coverImage",
           "isSampleData"
         ]
       },
@@ -4798,6 +4799,16 @@
               "UNDER_MAINTENANCE"
             ],
             "type": "string"
+          },
+          "coverImage": {
+            "nullable": true,
+            "description": "null when the WC has no photo",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageAccessResponse"
+              }
+            ]
           },
           "timezone": {
             "type": "string",
@@ -4909,15 +4920,6 @@
           "openingHoursKnown": {
             "type": "boolean"
           },
-          "coverImage": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ImageAccessResponse"
-              }
-            ]
-          },
           "distance": {
             "description": "Present only when lat/lng were supplied",
             "allOf": [
@@ -4934,6 +4936,7 @@
         "required": [
           "accessType",
           "status",
+          "coverImage",
           "timezone",
           "description",
           "descriptionKm",
@@ -4961,7 +4964,6 @@
           "lastVerifiedAt",
           "openNow",
           "openingHoursKnown",
-          "coverImage",
           "isSampleData"
         ]
       },
@@ -5365,9 +5367,13 @@
         "properties": {
           "imageId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "ID of one of this WC's photos"
           }
-        }
+        },
+        "required": [
+          "imageId"
+        ]
       },
       "CreateCleaningScheduleDto": {
         "type": "object",
@@ -5698,6 +5704,16 @@
             ],
             "type": "string"
           },
+          "coverImage": {
+            "nullable": true,
+            "description": "null when the WC has no photo",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageAccessResponse"
+              }
+            ]
+          },
           "timezone": {
             "type": "string",
             "example": "Asia/Phnom_Penh"
@@ -5808,15 +5824,6 @@
           "openingHoursKnown": {
             "type": "boolean"
           },
-          "coverImage": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ImageAccessResponse"
-              }
-            ]
-          },
           "distance": {
             "description": "Present only when lat/lng were supplied",
             "allOf": [
@@ -5863,6 +5870,7 @@
         "required": [
           "accessType",
           "status",
+          "coverImage",
           "timezone",
           "description",
           "descriptionKm",
@@ -5890,7 +5898,6 @@
           "lastVerifiedAt",
           "openNow",
           "openingHoursKnown",
-          "coverImage",
           "isSampleData",
           "archivedAt",
           "archiveReason",

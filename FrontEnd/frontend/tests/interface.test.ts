@@ -10,6 +10,8 @@ import { uploadPhotos } from '../src/services/upload'
 import { type Photo, type Row, type Schema } from '../src/types/api'
 import en from '../src/locales/en.json'
 import km from '../src/locales/km.json'
+import PublicLayout from '../src/layouts/PublicLayout.vue'
+import { useAccount } from '../src/stores/account'
 import HomeView from '../src/views/HomeView.vue'
 import ImageUploader from '../src/components/ImageUploader.vue'
 import AddToiletView from '../src/views/AddToiletView.vue'
@@ -87,6 +89,40 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 describe('public pages and preferences', () => {
+  it('opens account actions independently of mobile site navigation', async () => {
+    const store = pinia()
+    useAccount(store).user = { id: 'manager', role: 'MANAGER' }
+    const r = router()
+    await r.push('/')
+    const w = mount(PublicLayout, { attachTo: document.body, global: { plugins: [store, r] } })
+    wrappers.push(w)
+    const account = w.get('button[aria-controls="account-links"]')
+    const menu = w.get('button[aria-controls="navigation-links"]')
+    const actions = w.get('#account-links')
+    const navigation = w.get('#navigation-links')
+
+    await account.trigger('click')
+    expect(actions.isVisible()).toBe(true)
+    expect(actions.findAll('a').map(link => link.attributes('href'))).toEqual([
+      '/manager/dashboard', '/notifications', '/manager/profile',
+    ])
+    expect(actions.get('button').text()).toBe(en.logout)
+    expect(navigation.isVisible()).toBe(false)
+
+    await menu.trigger('click')
+    expect(actions.isVisible()).toBe(false)
+    expect(navigation.isVisible()).toBe(true)
+    expect(navigation.findAll('a').map(link => link.attributes('href'))).toEqual([
+      '/', '/explore', '/add-toilet', '/about',
+    ])
+    await navigation.get('a').trigger('keydown', { key: 'Escape' })
+    expect(menu.attributes('aria-expanded')).toBe('false')
+    expect(document.activeElement).toBe(menu.element)
+
+    await account.trigger('click')
+    await w.get('main').trigger('pointerdown')
+    expect(account.attributes('aria-expanded')).toBe('false')
+  })
   it('keeps translations in sync and persists theme and language', async () => {
     pinia()
     const prefs = usePrefs()
@@ -111,6 +147,29 @@ describe('public pages and preferences', () => {
     await w.get('form').trigger('submit')
     await flushPromises()
     expect(r.currentRoute.value.fullPath).toBe('/explore?q=Riverside')
+  })
+  it('keeps the Users search field focused when filtered results arrive', async () => {
+    const r = router()
+    await r.push('/admin/users')
+    spec.value!.paths['/admin/users'] = {
+      get: { parameters: [{ in: 'query', name: 'search' }] },
+    }
+    acceptTokens({ accessToken: 'test' })
+    const list = vi.fn(() => [])
+    respond(list)
+    const w = mount(WorkspaceView, {
+      attachTo: document.body,
+      global: { plugins: [pinia(), r] },
+    })
+    wrappers.push(w)
+    await flushPromises()
+    const input = w.get<HTMLInputElement>('.searchbox input[type=search]')
+    input.element.focus()
+    await input.setValue('Sokha')
+    await vi.waitFor(() => expect(list).toHaveBeenCalledTimes(2))
+    await flushPromises()
+    expect(document.activeElement).toBe(input.element)
+    expect(input.element.value).toBe('Sokha')
   })
   it('requests GPS only on user action and preserves manual search after denial', async () => {
     pinia()

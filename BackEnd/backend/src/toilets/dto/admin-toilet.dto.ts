@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, PartialType, PickType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType, PickType } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 import { AccessType, ToiletStatus } from '../../generated/prisma/client';
 import { PaginationQueryDto } from '../../common/dto/pagination.dto';
@@ -49,7 +49,7 @@ export class ArchiveToiletQueryDto {
 }
 
 export class SetCoverDto {
-  @ApiPropertyOptional({ format: 'uuid' })
+  @ApiProperty({ format: 'uuid', description: 'ID of one of this WC\'s photos' })
   @IsUUID()
   imageId: string;
 }

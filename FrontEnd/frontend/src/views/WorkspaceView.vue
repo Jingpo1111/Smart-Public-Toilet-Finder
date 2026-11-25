@@ -428,6 +428,75 @@ function reviewConflict() {
           {{ p.t('refresh') }}
         </button>
       </div>
+      <div v-if="endpoint && !id" class="toolbar">
+        <button
+          v-if="base === '/notifications' && supports('patch', '/me/notifications/read-all')"
+          class="btn outline"
+          @click="
+            launch({
+              title: 'markAllRead',
+              method: 'patch',
+              path: '/me/notifications/read-all',
+              confirm: true,
+            })
+          "
+        >
+          {{ p.t('markAllRead') }}
+        </button>
+        <div v-if="roleAssigned" class="segmented">
+          <button
+            v-for="[tab, key] in [
+              ['cleaning-logs', 'cleaning'],
+              ['cleaning-schedules', 'schedule'],
+            ]"
+            :key="tab"
+            :aria-pressed="cleaningTab === tab"
+            @click="cleaningTab = tab"
+          >
+            {{ p.t(key) }}
+          </button>
+        </div>
+        <label v-if="searchParam" class="searchbox">
+          <Icon name="search" />
+          <input
+            v-model="q"
+            type="search"
+            :placeholder="p.t('search')"
+            :aria-label="p.t('search')"
+          />
+        </label>
+        <select
+          v-if="base === '/admin/submissions' && params.includes('status')"
+          v-model="filter"
+          class="field"
+          :aria-label="p.t('status')"
+        >
+          <option value="">{{ p.t('any') }}</option>
+          <option v-for="s in ['PENDING', 'APPROVED', 'REJECTED']" :key="s" :value="s">
+            {{ p.t(statusKey(s)) }}
+          </option>
+        </select>
+        <select
+          v-if="params.includes('archived')"
+          v-model="archived"
+          class="field"
+          :aria-label="p.t('archived')"
+        >
+          <option v-for="v in ['exclude', 'include', 'only']" :value="v" :key="v">
+            {{ p.t(v) }}
+          </option>
+        </select>
+        <RouterLink v-if="base === '/admin/toilets'" class="btn primary" to="/admin/toilets/new">
+          {{ p.t('add') }}
+        </RouterLink>
+        <button
+          v-if="base === '/admin/assignments' && supports('post', endpoint)"
+          class="btn primary"
+          @click="launch({ title: 'assignments', path: endpoint, method: 'post', confirm: true })"
+        >
+          {{ p.t('assignments') }}
+        </button>
+      </div>
       <StatePanel
         v-if="phase !== 'ok'"
         :phase="phase"
@@ -567,70 +636,6 @@ function reviewConflict() {
         </RecordDetail>
       </template>
       <template v-else>
-        <div class="toolbar">
-          <button
-            v-if="base === '/notifications' && supports('patch', '/me/notifications/read-all')"
-            class="btn outline"
-            @click="
-              launch({
-                title: 'markAllRead',
-                method: 'patch',
-                path: '/me/notifications/read-all',
-                confirm: true,
-              })
-            "
-          >
-            {{ p.t('markAllRead') }}
-          </button>
-          <div v-if="roleAssigned" class="segmented">
-            <button
-              v-for="[tab, key] in [
-                ['cleaning-logs', 'cleaning'],
-                ['cleaning-schedules', 'schedule'],
-              ]"
-              :key="tab"
-              :aria-pressed="cleaningTab === tab"
-              @click="cleaningTab = tab"
-            >
-              {{ p.t(key) }}
-            </button>
-          </div>
-          <label v-if="searchParam" class="searchbox">
-            <Icon name="search" />
-            <input v-model="q" :placeholder="p.t('search')" :aria-label="p.t('search')" />
-          </label>
-          <select
-            v-if="base === '/admin/submissions' && params.includes('status')"
-            v-model="filter"
-            class="field"
-            :aria-label="p.t('status')"
-          >
-            <option value="">{{ p.t('any') }}</option>
-            <option v-for="s in ['PENDING', 'APPROVED', 'REJECTED']" :key="s" :value="s">
-              {{ p.t(statusKey(s)) }}
-            </option>
-          </select>
-          <select
-            v-if="params.includes('archived')"
-            v-model="archived"
-            class="field"
-            :aria-label="p.t('archived')"
-          >
-            <option v-for="v in ['exclude', 'include', 'only']" :value="v" :key="v">
-              {{ p.t(v) }}
-            </option>
-          </select>
-          <RouterLink v-if="base === '/admin/toilets'" class="btn primary" to="/admin/toilets/new">
-            {{ p.t('add') }}
-          </RouterLink>
-          <button
-            v-if="base === '/admin/assignments' && supports('post', endpoint)"
-            class="btn primary"
-            @click="launch({ title: 'assignments', path: endpoint, method: 'post', confirm: true })"
-          >
-            {{ p.t('assignments') }}
-          </button>
-        </div>
         <RecordTable v-if="displayRows.length" :rows="displayRows" :base="base" @select="select" />
         <StatePanel v-else title="noRecords" description="noRecords" />
         <div v-if="pages > 1" class="pager">
