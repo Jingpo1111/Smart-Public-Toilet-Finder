@@ -4,10 +4,7 @@ import type { Method, Row, Spec } from '../types/api'
 import bundledContract from './openapi.generated.json'
 import { fillPath, operation, resolveSchema } from './contract'
 
-export const baseURL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api').replace(
-  /\/$/,
-  '',
-)
+export const baseURL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 const cookieAuth = import.meta.env.VITE_COOKIE_AUTH !== 'false'
 export const api = axios.create({ baseURL, timeout: 15000, headers: { Accept: 'application/json' } })
 export const spec = shallowRef<Spec | null>(null)

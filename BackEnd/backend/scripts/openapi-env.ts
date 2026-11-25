@@ -9,6 +9,7 @@ const defaults: Record<string, string> = {
   JWT_REFRESH_SECRET: 'openapi-export-placeholder-refresh-0123456789',
   SUPABASE_URL: 'http://127.0.0.1:54321',
   SUPABASE_SERVICE_ROLE_KEY: 'openapi-export-placeholder-key',
+  FRONTEND_URL_LOCAL: 'http://localhost:5173',
   THROTTLE_DISABLED: 'true',
 };
 for (const [k, v] of Object.entries(defaults)) {

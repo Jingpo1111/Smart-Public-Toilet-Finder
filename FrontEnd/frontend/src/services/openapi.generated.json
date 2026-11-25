@@ -2313,6 +2313,9 @@
       },
       "SetCoverDto": {
         "type": "object",
+        "required": [
+          "imageId"
+        ],
         "properties": {
           "imageId": {
             "type": "string",

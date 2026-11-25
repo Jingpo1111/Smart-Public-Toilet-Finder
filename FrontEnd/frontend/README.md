@@ -9,11 +9,10 @@ Use npm with Node 22.18+ or Node 24.12+. The project was checked with Node 26.13
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local
 npm run dev
 ```
 
-Open [the local frontend](http://localhost:5173). Vite reads `.env.local` when it starts. The default REST base is `http://localhost:3000/api`. Configure the NestJS backend's `FRONTEND_URL` to allow the exact frontend origin and start that backend separately. Its [Swagger interface](http://localhost:3000/api/docs) describes the deployment.
+Open [the local frontend](http://localhost:5173). Start NestJS separately and include the frontend origin in the backend's `FRONTEND_URL`.
 
 ## Explore the application
 
@@ -29,11 +28,27 @@ Open [the local frontend](http://localhost:5173). Vite reads `.env.local` when i
 
 Language and theme preferences persist locally. Access tokens, private records, photo previews and GPS coordinates stay in memory. The API manages the HttpOnly refresh cookie. Both languages use the same message keys, with local Inter and Noto Sans Khmer fonts.
 
+## Local and public API URLs
+
+Create or edit `frontend/.env` with both backend addresses. For example, with NestJS on port 3005 and the public API on the website’s own domain, use the following settings.
+
+```dotenv
+VITE_API_BASE_URL_LOCAL=http://localhost:3005/api
+VITE_API_BASE_URL_PUBLIC=/api
+```
+
+| Variable | Selected by | Value |
+| --- | --- | --- |
+| `VITE_API_BASE_URL_LOCAL` | `npm run dev` | Your local NestJS URL, including its port and `/api`. |
+| `VITE_API_BASE_URL_PUBLIC` | `npm run build` | `/api` on the public site’s domain, or the full HTTPS URL of a separately hosted backend. |
+
+Restart Vite after editing the local address. Rebuild the frontend after changing the public address. `npm run preview` serves the production build with the public address selected at build time.
+
 ## API configuration
 
-The client reads the deployed OpenAPI document at `/api/docs-json` by default. An operation must be present in the contract before the UI can call it. Missing actions and unavailable services have an explicit state. The checked-in contract was generated from the sibling NestJS application's Swagger builder. It supports deployments that keep Swagger private.
+Development reads the OpenAPI document from the local backend at `/api/docs-json`. Production uses the checked-in contract generated from the NestJS application. An operation must be present in the contract before the UI can call it.
 
-- Set `VITE_API_BASE_URL` to the desired REST base, including its global prefix.
+- An explicit `VITE_API_BASE_URL` in the shell or hosting build environment overrides the mode selection.
 - Set `VITE_OPENAPI_URL` to use a different export URL, or `VITE_API_CONTRACT=bundled` to use the checked-in contract.
 - Regenerate the frontend contract after backend changes with `npm run sync:api -- /path/to/openapi.json`.
 - Keep database, mail, storage keys and JWT signing secrets in the backend environment. Vite's `VITE_*` variables are public.
@@ -54,7 +69,7 @@ Vitest runs component, router, transport, upload, map and contract tests using i
 
 ## Production
 
-Build with the production API origin configured, then serve `dist/` over HTTPS. Serve existing static assets directly and rewrite other frontend routes to `index.html`. Keep `/api/` routed to NestJS if both share a domain. HTTPS enables browser GPS and secure production cookies. For local inspection of a build, run `npm run preview`. Map tiles and external directions need network access.
+When using the same public domain, forward `/api/*` to NestJS with the prefix intact. Include the public frontend origin in the backend's comma-separated `FRONTEND_URL`. Run `npm run build` and serve `dist/` over HTTPS. Serve assets directly and apply the `index.html` fallback to frontend routes such as `/explore` and `/admin/users` after routing API requests.
 
 ## Dependencies and offline build
 

@@ -10,7 +10,7 @@ export const CSRF_HEADER = 'x-csrf-protection';
  * CSRF defence for routes authenticated by the HttpOnly refresh cookie.
  *
  * 1. Custom header: `X-CSRF-Protection: 1` must be present. Browsers cannot attach custom headers
- *    to cross-origin requests without a CORS preflight, and CORS only allows FRONTEND_URL origins.
+ *    to cross-origin requests without a CORS preflight, and CORS only allows the configured frontend origins.
  * 2. Origin check: if the browser sends Origin (or Referer), it must be an allowed frontend origin
  *    or the API's own origin (Swagger UI).
  * 3. The cookie itself is SameSite (lax by default) and scoped to /api/auth.

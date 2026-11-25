@@ -138,7 +138,9 @@ access/refresh secrets, `COOKIE_SAMESITE=none` without `COOKIE_SECURE=true`).
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | yes | Server-side only |
 | `SUPABASE_*_BUCKET` | no | Bucket names (defaults as in BackEnd.md) |
 | `SIGNED_URL_EXPIRES_IN` | no | Signed image URL lifetime in seconds (default 3600) |
-| `FRONTEND_URL` | yes | Comma-separated allowed origins; the first is used in e-mail/QR links |
+| `FRONTEND_URL_LOCAL` | one of these | Local frontend, e.g. `http://localhost:5173` — allowed by CORS; used in e-mail/QR links outside production |
+| `FRONTEND_URL_PUBLIC` | one of these | Public frontend, e.g. `https://yourdomain.com` — allowed by CORS; used in e-mail/QR links in production |
+| `FRONTEND_URL` | no | Extra allowed origins, comma-separated (older single-variable form still works) |
 | `COOKIE_SAMESITE`, `COOKIE_SECURE`, `COOKIE_DOMAIN` | no | Refresh-cookie attributes |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SECURE`, `SMTP_FROM` | for password reset | Without SMTP, `/auth/forgot-password` returns **503** |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | seed only | |
@@ -186,8 +188,8 @@ unavailable. Unknown request properties are rejected with 400 (mass-assignment p
    revokes every session.
 5. `user.role` comes from the database. Role changes and deactivation take effect on the next request.
 6. Axios: `withCredentials: true` is required for `/auth/refresh` and `/auth/logout` (it is harmless elsewhere).
-   CORS allows only `FRONTEND_URL` origins, with credentials.
-7. Password reset e-mails link to `FRONTEND_URL/reset-password?token=…`; post `{ token, newPassword }` to
+   CORS allows only `FRONTEND_URL_LOCAL`, `FRONTEND_URL_PUBLIC` (and any extra `FRONTEND_URL`) origins, with credentials.
+7. Password reset e-mails link to `<frontend>/reset-password?token=…` (public site in production, local site otherwise); post `{ token, newPassword }` to
    `/auth/reset-password`. Tokens are single-use and expire after `PASSWORD_RESET_EXPIRES_MINUTES` (30).
 
 ### Image uploads (two-step, unambiguous)
@@ -323,7 +325,7 @@ contract. Every path listed in both documents exists with the same name. Additio
   metadata stripped, generated object names, quotas (20 unattached, 60/day), duplicate detection, cleanup of orphans.
 - **Privacy**: GPS coordinates sent to `/nearby` are not stored; public statistics are aggregates only; reporter e-mails
   only visible to admins; public reviews show reduced names.
-- **Headers**: Helmet (CSP, frameguard, no `x-powered-by`; HSTS in production); CORS restricted to `FRONTEND_URL`.
+- **Headers**: Helmet (CSP, frameguard, no `x-powered-by`; HSTS in production); CORS restricted to the configured frontend origins.
 - **Audit log**: auth events, submissions, approvals/rejections, WC changes, assignments, role changes, moderation.
 
 ## Testing
@@ -365,7 +367,7 @@ NODE_ENV=production npm run start:prod   # node dist/src/main.js
 
 - Optional PM2: `pm2 start ecosystem.config.cjs && pm2 save && pm2 startup`.
 - Terminate HTTPS at Nginx/Caddy or a Cloudflare Tunnel, set `TRUST_PROXY=1`, `COOKIE_SECURE=true`,
-  `FRONTEND_URL=https://your-frontend`, and keep `SWAGGER_ENABLED=false` unless the docs should be public.
+  `FRONTEND_URL_PUBLIC=https://your-frontend`, and keep `SWAGGER_ENABLED=false` unless the docs should be public.
 - If frontend and API are on different *sites* (not just subdomains), set `COOKIE_SAMESITE=none` and `COOKIE_SECURE=true`.
 - Do not run the seed in production (it refuses). Create the first administrator with
   `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run admin:create` (no sample data; re-running resets that admin's password and

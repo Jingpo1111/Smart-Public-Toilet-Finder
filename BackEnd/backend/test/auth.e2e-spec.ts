@@ -135,6 +135,23 @@ describe('Authentication & authorization (e2e)', () => {
       await ctx.http().post('/api/auth/refresh').set(CSRF).set('Origin', 'http://localhost:5173').set('Cookie', u.cookie).expect(200);
     });
 
+    it('answers both the local and the public frontend (CORS + CSRF), and nobody else', async () => {
+      for (const origin of ['http://localhost:5173', 'https://toiletgo.test.invalid']) {
+        const pre = await ctx
+          .http()
+          .options('/api/auth/refresh')
+          .set('Origin', origin)
+          .set('Access-Control-Request-Method', 'POST')
+          .set('Access-Control-Request-Headers', 'x-csrf-protection,content-type');
+        expect(pre.headers['access-control-allow-origin']).toBe(origin);
+        expect(pre.headers['access-control-allow-credentials']).toBe('true');
+        const u = await createUser(ctx, `origin-${new URL(origin).hostname}@example.com`);
+        await ctx.http().post('/api/auth/refresh').set(CSRF).set('Origin', origin).set('Cookie', u.cookie).expect(200);
+      }
+      const evil = await ctx.http().options('/api/auth/refresh').set('Origin', 'https://evil.example').set('Access-Control-Request-Method', 'POST');
+      expect(evil.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
     it('rotates the cookie; re-using a rotated token later revokes the whole family', async () => {
       const u = await createUser(ctx, 'rotate@example.com');
       const r1 = await ctx.http().post('/api/auth/refresh').set(CSRF).set('Cookie', u.cookie).expect(200);

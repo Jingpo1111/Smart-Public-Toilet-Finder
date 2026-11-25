@@ -390,7 +390,7 @@
     },
     "/api/auth/forgot-password": {
       "post": {
-        "description": "Same response whether or not the account exists. Returns 503 when SMTP is not configured (no e-mail can be sent). The e-mail links to FRONTEND_URL/reset-password?token=…",
+        "description": "Same response whether or not the account exists. Returns 503 when SMTP is not configured (no e-mail can be sent). The e-mail links to the frontend (FRONTEND_URL_PUBLIC in production, FRONTEND_URL_LOCAL otherwise) /reset-password?token=…",
         "operationId": "Auth_forgotPassword",
         "parameters": [],
         "requestBody": {
@@ -4366,12 +4366,7 @@
     "contact": {}
   },
   "tags": [],
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Local development"
-    }
-  ],
+  "servers": [],
   "components": {
     "securitySchemes": {
       "bearer": {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { parseDurationToSeconds } from '../common/utils/duration';
-import { EnvironmentVariables } from './env.validation';
+import { EnvironmentVariables, splitOrigins } from './env.validation';
 
 export interface BucketConfig {
   toilet: string;
@@ -38,16 +38,31 @@ export class AppConfigService {
     return this.get('DATABASE_URL');
   }
 
-  /** Allowed browser origins for CORS / CSRF origin checks. */
-  get frontendOrigins(): string[] {
-    return String(this.get('FRONTEND_URL'))
-      .split(',')
-      .map((o) => o.trim().replace(/\/+$/, ''))
-      .filter(Boolean);
+  /** Local frontend (FRONTEND_URL_LOCAL), e.g. http://localhost:5173. */
+  get frontendLocalUrl(): string | undefined {
+    return splitOrigins(this.get('FRONTEND_URL_LOCAL'))[0];
   }
-  /** Primary frontend URL used to build links in e-mails and QR codes. */
+  /** Public frontend (FRONTEND_URL_PUBLIC), e.g. https://yourdomain.com. */
+  get frontendPublicUrl(): string | undefined {
+    return splitOrigins(this.get('FRONTEND_URL_PUBLIC'))[0];
+  }
+
+  /** Allowed browser origins for CORS / CSRF checks: local + public + any extra FRONTEND_URL entries. */
+  get frontendOrigins(): string[] {
+    const all = [this.frontendLocalUrl, this.frontendPublicUrl, ...splitOrigins(this.get('FRONTEND_URL'))];
+    return [...new Set(all.filter((o): o is string => !!o))];
+  }
+
+  /**
+   * Frontend address used inside password-reset e-mails and QR codes:
+   * the public site in production, the local site otherwise (falling back to whichever is set).
+   */
   get frontendUrl(): string {
-    return this.frontendOrigins[0];
+    const extra = splitOrigins(this.get('FRONTEND_URL'))[0];
+    const order = this.isProduction
+      ? [this.frontendPublicUrl, extra, this.frontendLocalUrl]
+      : [this.frontendLocalUrl, extra, this.frontendPublicUrl];
+    return order.find((o): o is string => !!o) ?? this.frontendOrigins[0];
   }
 
   get jwt() {

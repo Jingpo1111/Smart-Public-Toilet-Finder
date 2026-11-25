@@ -34,7 +34,6 @@ export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
     .setTitle('ToiletGo KH API')
     .setDescription(DESCRIPTION)
     .setVersion('1.0.0')
-    .addServer('http://localhost:3000', 'Local development')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'Access token from /auth/login' })
     .addCookieAuth('tg_refresh', { type: 'apiKey', in: 'cookie', name: 'tg_refresh' }, 'refresh-cookie')
     .build();

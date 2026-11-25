@@ -93,9 +93,20 @@ export class EnvironmentVariables {
   @Max(7 * 24 * 3600)
   SIGNED_URL_EXPIRES_IN = 3600;
 
+  /** Frontend on your computer, e.g. http://localhost:5173 (allowed by CORS; used for links in development). */
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  FRONTEND_URL = 'http://localhost:5173';
+  FRONTEND_URL_LOCAL?: string;
+
+  /** Public frontend, e.g. https://yourdomain.com (allowed by CORS; used for links in production). */
+  @IsOptional()
+  @IsString()
+  FRONTEND_URL_PUBLIC?: string;
+
+  /** Optional extra allowed origins, comma-separated (kept for backward compatibility). */
+  @IsOptional()
+  @IsString()
+  FRONTEND_URL?: string;
 
   @IsOptional() @IsString() SMTP_HOST?: string;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(65535) SMTP_PORT?: number;
@@ -120,6 +131,26 @@ export class EnvironmentVariables {
   @IsOptional() @IsIn(['true', 'false']) THROTTLE_DISABLED?: string;
 }
 
+/** Splits a comma-separated list of origins and removes trailing slashes. */
+export function splitOrigins(value: string | undefined): string[] {
+  return (value ?? '')
+    .split(',')
+    .map((o) => o.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+}
+
+/** Returns an error message when `value` is not a bare http(s) origin such as https://yourdomain.com. */
+function originError(name: string, value: string): string | null {
+  try {
+    const u = new URL(value);
+    if (!['http:', 'https:'].includes(u.protocol)) return `${name}: "${value}" must start with http:// or https://`;
+    if (u.origin !== value) return `${name}: "${value}" must be an origin only, without path (e.g. ${u.origin})`;
+    return null;
+  } catch {
+    return `${name}: "${value}" is not a valid URL (e.g. https://yourdomain.com)`;
+  }
+}
+
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
   // Treat empty strings from .env placeholders as "unset" so defaults and @IsOptional apply.
   const cleaned = Object.fromEntries(Object.entries(config).filter(([, v]) => v !== ''));
@@ -139,6 +170,23 @@ export function validateEnv(config: Record<string, unknown>): EnvironmentVariabl
   }
   if (validated.COOKIE_SAMESITE === 'none' && validated.COOKIE_SECURE === 'false') {
     messages.push('  - COOKIE_SAMESITE=none requires COOKIE_SECURE=true');
+  }
+  const frontends: [string, string[]][] = [
+    ['FRONTEND_URL_LOCAL', splitOrigins(validated.FRONTEND_URL_LOCAL)],
+    ['FRONTEND_URL_PUBLIC', splitOrigins(validated.FRONTEND_URL_PUBLIC)],
+    ['FRONTEND_URL', splitOrigins(validated.FRONTEND_URL)],
+  ];
+  if (frontends.every(([, list]) => list.length === 0)) {
+    messages.push('  - Set FRONTEND_URL_LOCAL and/or FRONTEND_URL_PUBLIC (the frontend addresses allowed to use this API)');
+  }
+  for (const [name, list] of frontends) {
+    if ((name === 'FRONTEND_URL_LOCAL' || name === 'FRONTEND_URL_PUBLIC') && list.length > 1) {
+      messages.push(`  - ${name} must contain one address (use FRONTEND_URL for extra comma-separated origins)`);
+    }
+    for (const origin of list) {
+      const err = originError(name, origin);
+      if (err) messages.push(`  - ${err}`);
+    }
   }
   if (validated.SMTP_HOST && !validated.SMTP_PORT) {
     messages.push('  - SMTP_PORT is required when SMTP_HOST is set');

@@ -1,5 +1,7 @@
 // Read-only connectivity check. Never reads tokens or database credentials.
-const base = (process.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api').replace(/\/$/, '')
+import { loadEnv } from 'vite'
+const env = loadEnv('development', '.', 'VITE_API_BASE_URL')
+const base = (env.VITE_API_BASE_URL || env.VITE_API_BASE_URL_LOCAL || 'http://localhost:3000/api').replace(/\/$/, '')
 async function read(url) {
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },

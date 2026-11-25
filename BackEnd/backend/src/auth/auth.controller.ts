@@ -121,7 +121,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Request a password reset e-mail',
     description:
-      'Same response whether or not the account exists. Returns 503 when SMTP is not configured (no e-mail can be sent). The e-mail links to FRONTEND_URL/reset-password?token=…',
+      'Same response whether or not the account exists. Returns 503 when SMTP is not configured (no e-mail can be sent). The e-mail links to the frontend (FRONTEND_URL_PUBLIC in production, FRONTEND_URL_LOCAL otherwise) /reset-password?token=…',
   })
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.auth.forgotPassword(dto);
