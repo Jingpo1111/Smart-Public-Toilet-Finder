@@ -10,9 +10,8 @@ const route = useRoute(),
   router = useRouter(),
   p = usePrefs(),
   a = useAccount()
-const openMenu = ref<'account' | 'navigation' | null>(null)
+const openMenu = ref<'account' | null>(null)
 const accountButton = ref<HTMLButtonElement>()
-const navigationButton = ref<HTMLButtonElement>()
 const nav = computed(() => [
   ['home', '/', 'house'],
   ['explore', '/explore', 'map'],
@@ -23,13 +22,13 @@ const accountPage = computed(() => (a.role === 'USER' ? '/dashboard' : landing(a
 function closeMenu() {
   openMenu.value = null
 }
-function toggleMenu(menu: 'account' | 'navigation') {
+function toggleMenu(menu: 'account') {
   openMenu.value = openMenu.value === menu ? null : menu
 }
 watch([() => route.fullPath, () => a.user?.id], closeMenu)
 watch(openMenu, (menu, _, onCleanup) => {
   if (!menu) return
-  const button = menu === 'account' ? accountButton.value : navigationButton.value
+  const button = accountButton.value
   function closeOutside(event: Event) {
     if (event.target instanceof Node && !button?.parentElement?.contains(event.target)) closeMenu()
   }
@@ -115,21 +114,6 @@ async function logout() {
             <button @click="logout">{{ p.t('logout') }}</button>
           </div>
         </div>
-        <div class="header-dropdown mobile-menu">
-          <button
-            ref="navigationButton"
-            class="iconbtn"
-            :aria-label="p.t('menu')"
-            aria-controls="navigation-links"
-            :aria-expanded="openMenu === 'navigation'"
-            @click="toggleMenu('navigation')"
-          >
-            <Icon :name="openMenu === 'navigation' ? 'x' : 'menu'" />
-          </button>
-          <nav v-show="openMenu === 'navigation'" id="navigation-links" class="menubox" :aria-label="p.t('menu')" @click="closeMenu">
-            <RouterLink v-for="[key, path] in nav" :key="path" :to="path">{{ p.t(key) }}</RouterLink>
-          </nav>
-        </div>
       </div>
     </div>
   </header>
@@ -147,7 +131,7 @@ async function logout() {
     </div>
   </footer>
   <nav class="bottomnav" :aria-label="p.t('menu')">
-    <RouterLink v-for="[key, path, icon] in nav.slice(0, 3)" :key="path" :to="path">
+    <RouterLink v-for="[key, path, icon] in nav" :key="path" :to="path">
       <Icon :name="icon" :size="19" />
       {{ p.t(key) }}
     </RouterLink>

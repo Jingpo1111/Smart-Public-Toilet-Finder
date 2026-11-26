@@ -331,7 +331,6 @@ small {
   color: white;
   background: #a13e38;
 }
-.mobile-menu,
 .bottomnav {
   display: none;
 }
@@ -1344,9 +1343,6 @@ td img {
   }
   .tools {
     gap: 3px;
-  }
-  .mobile-menu {
-    display: flex;
   }
   .brand {
     font-size: 22px;

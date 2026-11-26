@@ -90,35 +90,33 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 describe('public pages and preferences', () => {
-  it('opens account actions independently of mobile site navigation', async () => {
+  it('shows one navigation: account actions pop up, site links live in the navbar and bottom bar', async () => {
     const store = pinia()
     useAccount(store).user = { id: 'manager', role: 'MANAGER' }
     const r = router()
     await r.push('/')
     const w = mount(PublicLayout, { attachTo: document.body, global: { plugins: [store, r] } })
     wrappers.push(w)
-    const account = w.get('button[aria-controls="account-links"]')
-    const menu = w.get('button[aria-controls="navigation-links"]')
-    const actions = w.get('#account-links')
-    const navigation = w.get('#navigation-links')
+    // No hamburger popup: it duplicated the bottom bar.
+    expect(w.find('button[aria-controls="navigation-links"]').exists()).toBe(false)
+    expect(w.find('#navigation-links').exists()).toBe(false)
+    const links = (selector: string) => w.findAll(selector + ' a').map((link) => link.attributes('href'))
+    expect(links('.desktop-nav')).toEqual(['/', '/explore', '/add-toilet', '/about'])
+    expect(links('.bottomnav')).toEqual(['/', '/explore', '/add-toilet', '/about'])
 
+    const account = w.get('button[aria-controls="account-links"]')
+    const actions = w.get('#account-links')
+    expect(actions.isVisible()).toBe(false)
     await account.trigger('click')
     expect(actions.isVisible()).toBe(true)
-    expect(actions.findAll('a').map(link => link.attributes('href'))).toEqual([
+    expect(actions.findAll('a').map((link) => link.attributes('href'))).toEqual([
       '/manager/dashboard', '/notifications', '/manager/profile',
     ])
     expect(actions.get('button').text()).toBe(en.logout)
-    expect(navigation.isVisible()).toBe(false)
 
-    await menu.trigger('click')
-    expect(actions.isVisible()).toBe(false)
-    expect(navigation.isVisible()).toBe(true)
-    expect(navigation.findAll('a').map(link => link.attributes('href'))).toEqual([
-      '/', '/explore', '/add-toilet', '/about',
-    ])
-    await navigation.get('a').trigger('keydown', { key: 'Escape' })
-    expect(menu.attributes('aria-expanded')).toBe('false')
-    expect(document.activeElement).toBe(menu.element)
+    await actions.get('a').trigger('keydown', { key: 'Escape' })
+    expect(account.attributes('aria-expanded')).toBe('false')
+    expect(document.activeElement).toBe(account.element)
 
     await account.trigger('click')
     await w.get('main').trigger('pointerdown')
