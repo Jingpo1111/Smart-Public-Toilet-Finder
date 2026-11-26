@@ -52,13 +52,13 @@ async function gps() {
   }
 }
 let timer: ReturnType<typeof setTimeout> | undefined
+// Text search is filtered locally, so only the other filters and the location need a (cached) request.
 watch(
-  [f, () => store.origin],
+  () => JSON.stringify([{ ...f, q: '' }, store.origin]),
   () => {
     clearTimeout(timer)
     timer = setTimeout(() => store.load(false, { ...f }), 220)
   },
-  { deep: true },
 )
 onBeforeUnmount(() => clearTimeout(timer))
 onMounted(() => store.load(false, { ...f }))

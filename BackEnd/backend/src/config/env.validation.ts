@@ -41,6 +41,13 @@ export class EnvironmentVariables {
   @IsString()
   DIRECT_URL?: string;
 
+  /** Maximum pooled database connections held by this process. */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  DB_POOL_MAX = 10;
+
   @IsString()
   @MinLength(32, { message: 'JWT_SECRET must be at least 32 characters' })
   JWT_SECRET: string;

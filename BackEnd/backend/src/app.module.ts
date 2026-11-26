@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { CsrfGuard } from './common/guards/csrf.guard';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
+import { CacheControlInterceptor } from './common/interceptors/cache-control.interceptor';
 import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 import { createValidationPipe } from './common/validation';
 import { AppConfigService } from './config/app-config.service';
@@ -67,6 +68,7 @@ import { UsersModule } from './users/users.module';
     { provide: APP_GUARD, useClass: CsrfGuard },
     { provide: APP_PIPE, useFactory: createValidationPipe },
     { provide: APP_INTERCEPTOR, useClass: ResponseEnvelopeInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: CacheControlInterceptor },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
   ],
 })

@@ -11,12 +11,16 @@ export const useDiscovery = defineStore('discovery', () => {
     gpsBusy = ref(false)
   let generation = 0,
     active: AbortController | undefined
+  // Results per query. Re-visiting a query (typing, toggling a filter back, switching pages) is
+  // instant; older entries are shown immediately while a background refresh replaces them.
+  const cache = new Map<string, { rows: Toilet[]; at: number }>()
+  const FRESH_MS = 30_000,
+    PAGE_CONCURRENCY = 4
   async function load(force = false, filters: Filters = emptyFilters()) {
     const current = ++generation
     active?.abort()
     const controller = new AbortController()
     active = controller
-    phase.value = 'loading'
     error.value = ''
     try {
       await discover(force)
@@ -24,10 +28,9 @@ export const useDiscovery = defineStore('discovery', () => {
       const path =
         filters.radius && location && supports('get', '/toilets/nearby') ? '/toilets/nearby' : '/toilets'
       if (!supports('get', path)) throw new Error(spec.value ? 'unsupported' : 'networkError')
-      const all = new Map<string, Toilet>()
       // Filter and sort the entire public collection, including paginated responses.
+      // Text search is applied locally (filterToilets), so typing never needs a request.
       const query = {
-        q: filters.q.trim() || undefined,
         accessType: filters.access || undefined,
         openNow: filters.open || undefined,
         minRating: filters.rated ? 4 : undefined,
@@ -41,24 +44,43 @@ export const useDiscovery = defineStore('discovery', () => {
         sort: location ? 'distance' : 'rating',
         limit: 100,
       }
-      let page = 1
-      for (;;) {
+      const key = path + JSON.stringify(query)
+      const hit = cache.get(key)
+      if (hit) {
+        rows.value = hit.rows
+        phase.value = 'ok'
+        if (!force && Date.now() - hit.at < FRESH_MS) return
+      } else phase.value = 'loading'
+      const fetchPage = async (page: number) => {
         const result = pageOf(
           await request('get', path, { params: { ...query, page }, signal: controller.signal }),
         )
+        if (page > 1 && result.page !== page) throw new Error('incompatible')
+        return result
+      }
+      const first = await fetchPage(1)
+      if (current !== generation) return
+      if (
+        first.pages > 1 &&
+        !op('get', path)?.parameters?.some((p) => p.in === 'query' && p.name === 'page')
+      )
+        throw new Error('incompatible')
+      // Page 1 reveals the page count; the remaining pages are fetched in parallel.
+      const results = [first]
+      const rest = Array.from({ length: Math.max(0, first.pages - 1) }, (_, i) => i + 2)
+      for (let i = 0; i < rest.length; i += PAGE_CONCURRENCY) {
+        results.push(...(await Promise.all(rest.slice(i, i + PAGE_CONCURRENCY).map(fetchPage))))
         if (current !== generation) return
+      }
+      const all = new Map<string, Toilet>()
+      for (const result of results)
         result.items.map(publicToilet).forEach((t) => {
           if (t) all.set(t.id, t)
         })
-        if (page >= result.pages) break
-        if (
-          result.page !== page ||
-          !op('get', path)?.parameters?.some((p) => p.in === 'query' && p.name === 'page')
-        )
-          throw new Error('incompatible')
-        page++
-      }
-      rows.value = [...all.values()]
+      const list = [...all.values()]
+      if (cache.size >= 20) cache.delete(cache.keys().next().value!)
+      cache.set(key, { rows: list, at: Date.now() })
+      rows.value = list
       phase.value = 'ok'
     } catch (e) {
       if (current === generation) {
@@ -68,6 +90,8 @@ export const useDiscovery = defineStore('discovery', () => {
       }
     }
   }
+  /** Drops cached results after a change that alters the public list (e.g. an approved submission). */
+  const invalidate = () => cache.clear()
   async function locate() {
     if (!navigator.geolocation) throw new Error('gpsDenied')
     gpsBusy.value = true
@@ -83,5 +107,5 @@ export const useDiscovery = defineStore('discovery', () => {
       gpsBusy.value = false
     }
   }
-  return { rows, phase, error, origin, gpsBusy, load, locate }
+  return { rows, phase, error, origin, gpsBusy, load, locate, invalidate }
 })

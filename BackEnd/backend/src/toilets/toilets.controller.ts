@@ -1,6 +1,7 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiEnvelope, ApiPaginatedEnvelope } from '../common/decorators/api-envelope.decorator';
+import { CacheFor } from '../common/interceptors/cache-control.interceptor';
 import { OptionalUser, Public } from '../common/decorators/auth.decorators';
 import type { AuthUser } from '../common/types/auth-user';
 import { DISTANCE_NOTE } from '../common/utils/geo';
@@ -18,6 +19,7 @@ export class ToiletsController {
   constructor(private readonly toilets: ToiletsService) {}
 
   @Public()
+  @CacheFor(15)
   @Get()
   @ApiOperation({
     summary: 'Search and filter verified WCs (paginated)',
@@ -29,6 +31,7 @@ export class ToiletsController {
   }
 
   @Public()
+  @CacheFor(15)
   @Get('nearby')
   @ApiOperation({
     summary: 'Nearby verified WCs within a radius, nearest first (paginated)',
@@ -40,6 +43,7 @@ export class ToiletsController {
   }
 
   @Public()
+  @CacheFor(120)
   @Get('districts')
   @ApiOperation({ summary: 'Districts (Khan) that have verified WCs, with counts' })
   districts() {

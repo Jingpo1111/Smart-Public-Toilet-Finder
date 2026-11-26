@@ -103,6 +103,42 @@ describe('the exported NestJS contract', () => {
     expect(query).toMatchObject({ lat: 11.55, lng: 104.93, radius: 2000, hasWater: true })
     expect(query).not.toHaveProperty('sort')
   })
+  it('fetches the remaining pages in parallel and serves repeat searches from the cache', async () => {
+    pinia()
+    const pages: number[] = []
+    let inFlight = 0,
+      peak = 0
+    api.defaults.adapter = async (c) => {
+      const page = Number(c.params.page)
+      pages.push(page)
+      inFlight++
+      peak = Math.max(peak, inFlight)
+      await new Promise((r) => setTimeout(r, 5))
+      inFlight--
+      return {
+        config: c,
+        status: 200,
+        statusText: 'OK',
+        headers: new AxiosHeaders(),
+        data: { data: [{ ...fixture, id: 'wc' + page }], meta: { page, totalPages: 4 } },
+      }
+    }
+    const s = useDiscovery()
+    await s.load(false, emptyFilters())
+    expect(s.phase).toBe('ok')
+    expect(s.rows.map((r) => r.id).sort()).toEqual(['wc1', 'wc2', 'wc3', 'wc4'])
+    expect(pages[0]).toBe(1)
+    expect(peak).toBeGreaterThan(1)
+    // Text search is local: typing must not trigger a request, and never blanks the list.
+    pages.length = 0
+    await s.load(false, { ...emptyFilters(), q: 'rest' })
+    expect(pages).toEqual([])
+    expect(s.rows).toHaveLength(4)
+    // Approving a submission invalidates the cache so the new public list is fetched.
+    s.invalidate()
+    await s.load(false, emptyFilters())
+    expect(pages).toHaveLength(4)
+  })
 })
 describe('map, photos and authenticated interactions', () => {
   it('submits the location picked on the admin creation map with manual adjustments', async () => {

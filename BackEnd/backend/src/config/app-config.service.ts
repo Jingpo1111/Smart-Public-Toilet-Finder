@@ -37,6 +37,9 @@ export class AppConfigService {
   get databaseUrl() {
     return this.get('DATABASE_URL');
   }
+  get dbPoolMax() {
+    return Number(this.get('DB_POOL_MAX'));
+  }
 
   /** Local frontend (FRONTEND_URL_LOCAL), e.g. http://localhost:5173. */
   get frontendLocalUrl(): string | undefined {

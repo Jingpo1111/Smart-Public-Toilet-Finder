@@ -26,8 +26,16 @@ const icon = (name: string) =>
     iconAnchor: [16, 38],
     popupAnchor: [0, -36],
   })
+// Several triggers can fire in one frame (rows + origin + zoom); redraw once per frame.
+let frame = 0
 function draw() {
-  if (!map) return
+  if (!map || frame) return
+  frame = requestAnimationFrame(() => {
+    frame = 0
+    paint()
+  })
+}
+function paint() {
   group.clearLayers()
   const cells = new Map<string, Toilet[]>()
   for (const wc of props.rows) {
@@ -52,21 +60,25 @@ function draw() {
         .addTo(group)
       continue
     }
-    const div = document.createElement('div')
-    if (wc.images[0]) {
-      const img = document.createElement('img')
-      img.src = wc.images[0]
-      img.alt = name
-      img.referrerPolicy = 'no-referrer'
-      div.append(img)
+    // Built only when the popup opens, so photos are not downloaded for every marker on every redraw.
+    const popup = () => {
+      const div = document.createElement('div')
+      if (wc.images[0]) {
+        const img = document.createElement('img')
+        img.src = wc.images[0]
+        img.alt = name
+        img.referrerPolicy = 'no-referrer'
+        div.append(img)
+      }
+      const a = document.createElement('a')
+      a.href = '/toilets/' + encodeURIComponent(wc.id)
+      a.textContent = name
+      div.append(a)
+      const addr = document.createElement('small')
+      addr.textContent = wc.address
+      div.append(addr)
+      return div
     }
-    const a = document.createElement('a')
-    a.href = '/toilets/' + encodeURIComponent(wc.id)
-    a.textContent = name
-    div.append(a)
-    const addr = document.createElement('small')
-    addr.textContent = wc.address
-    div.append(addr)
     L.marker(loc, {
       icon: icon(
         wc.wheelchair ? 'accessible-marker' : wc.access === 'PAID' ? 'paid-wc-marker' : 'wc-marker',
@@ -74,7 +86,7 @@ function draw() {
       title: name,
       alt: name,
     })
-      .bindPopup(div)
+      .bindPopup(popup)
       .addTo(group)
   }
   if (props.origin)
@@ -116,7 +128,7 @@ onMounted(() => {
     .on('tileload', () => (tileError.value = false))
     .addTo(map)
   group = L.layerGroup().addTo(map)
-  draw()
+  paint()
   focus()
   map.on('zoomend', draw)
   if (props.picker) map.on('click', (e) => emit('pick', [e.latlng.lat, e.latlng.lng]))
@@ -125,9 +137,10 @@ onMounted(() => {
     resize.observe(el.value!)
   }
 })
-watch(() => [props.rows, props.selected, props.origin, p.lang], draw, { deep: true })
+watch(() => [props.rows, props.selected, props.origin, p.lang], draw)
 watch(() => [props.origin, props.selected, props.rows], focus)
 onBeforeUnmount(() => {
+  cancelAnimationFrame(frame)
   resize?.disconnect()
   map?.remove()
 })

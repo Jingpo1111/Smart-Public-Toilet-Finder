@@ -196,7 +196,7 @@ export class ToiletsService {
     if (hasPoint) {
       return this.distancePage(where, q.lat!, q.lng!, q.radius ?? MAX_SEARCH_RADIUS_M, q.page, q.limit, q.sort ?? 'distance', q.order);
     }
-    const [rows, total] = await this.prisma.$transaction([
+    const [rows, total] = await Promise.all([
       this.prisma.toilet.findMany({ where, include: TOILET_LIST_INCLUDE, orderBy: this.orderBy(q.sort, q.order), ...skipTake(q) }),
       this.prisma.toilet.count({ where }),
     ]);
@@ -277,7 +277,7 @@ export class ToiletsService {
           : q.sort === 'updated'
             ? [{ updatedAt: 'desc' }]
             : [{ createdAt: 'desc' }];
-    const [rows, total] = await this.prisma.$transaction([
+    const [rows, total] = await Promise.all([
       this.prisma.toilet.findMany({
         where,
         include: { ...TOILET_LIST_INCLUDE, _count: { select: { managerAssignments: true, reports: { where: { status: { in: [ReportStatus.PENDING, ReportStatus.IN_PROGRESS] } } } } } },
@@ -463,7 +463,7 @@ export class ToiletsService {
     if (filters?.q) and.push(textSearch(filters.q));
     if (filters?.status) and.push({ status: filters.status });
     const w = { AND: and };
-    const [rows, total] = await this.prisma.$transaction([
+    const [rows, total] = await Promise.all([
       this.prisma.toilet.findMany({ where: w, include: TOILET_LIST_INCLUDE, orderBy: [{ name: 'asc' }, { id: 'asc' }], ...skipTake(q) }),
       this.prisma.toilet.count({ where: w }),
     ]);

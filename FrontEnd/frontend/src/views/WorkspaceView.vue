@@ -377,6 +377,7 @@ async function saved() {
   if (previous?.title === 'approve' || previous?.title === 'reject') {
     ownerOf('/admin').invalidate()
     ownerOf('/me/toilet-suggestions').invalidate()
+    publicData.invalidate()
     void publicData.load()
   }
   if (create) {

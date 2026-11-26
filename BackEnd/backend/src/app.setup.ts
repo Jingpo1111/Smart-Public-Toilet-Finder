@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import helmet from 'helmet';
@@ -21,6 +22,8 @@ export function configureApp(app: NestExpressApplication): INestApplication {
   app.disable('x-powered-by');
   app.setGlobalPrefix(API_PREFIX);
 
+  // gzip/deflate JSON and text responses (list endpoints are large and highly compressible).
+  app.use(compression({ threshold: 1024 }));
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'same-site' },
