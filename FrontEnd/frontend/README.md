@@ -30,19 +30,9 @@ Language and theme preferences persist locally. Access tokens, private records, 
 
 ## Local and public API URLs
 
-Create or edit `frontend/.env` with both backend addresses. For example, with NestJS on port 3005 and the public API on the website’s own domain, use the following settings.
+`npm run dev` uses `http://localhost:3005/api`. For Vercel Git deployments, set the project's Root Directory to `FrontEnd/frontend`. The production browser uses `/api` on the Vercel domain. [vercel.json](vercel.json) forwards those requests to the public NestJS endpoint and serves frontend routes through `index.html`.
 
-```dotenv
-VITE_API_BASE_URL_LOCAL=http://localhost:3005/api
-VITE_API_BASE_URL_PUBLIC=/api
-```
-
-| Variable | Selected by | Value |
-| --- | --- | --- |
-| `VITE_API_BASE_URL_LOCAL` | `npm run dev` | Your local NestJS URL, including its port and `/api`. |
-| `VITE_API_BASE_URL_PUBLIC` | `npm run build` | `/api` on the public site’s domain, or the full HTTPS URL of a separately hosted backend. |
-
-Restart Vite after editing the local address. For Vercel Git deployments, set the project's Root Directory to `FrontEnd/frontend`. Include its public `.env` and `vercel.json` in Git. Each deployment reads `VITE_API_BASE_URL_PUBLIC` from that revision of `.env`, even when older API values exist in the Vercel dashboard. To change the deployed address, edit the file and push to the deployment branch. `npm run preview` serves the address selected at build time.
+To change the production backend, update the API rewrite destination in `vercel.json` and redeploy. The upstream must be reachable from the public internet. A Tailscale backend can use Funnel for that endpoint. After deployment, open the Vercel site's `/api/health` to check the forwarded request.
 
 ## API configuration
 

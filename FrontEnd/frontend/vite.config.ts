@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const production = mode === 'production'
   const modeKey = production ? 'VITE_API_BASE_URL_PUBLIC' : 'VITE_API_BASE_URL_LOCAL'
   const backendKey = env.VITE_API_BASE_URL ? 'VITE_API_BASE_URL' : modeKey
-  const backend = env[backendKey]?.trim() || (production ? '/api' : 'http://localhost:3000/api')
+  const backend = env[backendKey]?.trim() || (production ? '/api' : 'http://localhost:3005/api')
   if (/https?:\/\/[\s\S]*https?:\/\//i.test(backend)) {
     throw new Error(`${backendKey} contains multiple URLs. Set it to one API base address.`)
   }
