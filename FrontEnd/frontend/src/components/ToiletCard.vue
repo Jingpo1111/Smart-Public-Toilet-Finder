@@ -7,7 +7,8 @@ import Icon from './Icon.vue'
 import { computed, ref, watch } from 'vue'
 const props = defineProps<{ item: Toilet; origin?: Point }>(),
   p = usePrefs(),
-  broken = ref(false)
+  broken = ref(false),
+  loaded = ref(false)
 const name = computed(() => (p.lang === 'km' && props.item.nameKm) || props.item.name)
 const replacement = ref(''),
   retried = ref(false)
@@ -15,6 +16,7 @@ watch(
   () => props.item.images[0],
   () => {
     broken.value = false
+    loaded.value = false
     replacement.value = ''
     retried.value = false
   },
@@ -42,8 +44,13 @@ async function failed() {
         v-if="item.images[0] && !broken"
         :src="replacement || item.images[0]"
         :alt="name"
+        :class="{ loaded }"
         loading="lazy"
+        decoding="async"
+        width="400"
+        height="210"
         referrerpolicy="no-referrer"
+        @load="loaded = true"
         @error="failed"
       />
       <template v-else>

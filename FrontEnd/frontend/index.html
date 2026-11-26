@@ -3,7 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#fbfbf7" />
+    <meta name="theme-color" content="#fbfbf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <script>
+      // Apply the saved/system theme before first paint so dark-mode users never see a light flash.
+      try {
+        var t = localStorage.getItem('tg-theme')
+        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches))
+          document.documentElement.dataset.theme = 'dark'
+      } catch (e) {}
+    </script>
     <meta
       name="description"
       content="Find public restrooms in Phnom Penh. Explore the map, check facilities and contribute locations to ToiletGo KH."

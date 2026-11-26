@@ -8,7 +8,8 @@ export const useDiscovery = defineStore('discovery', () => {
     phase = ref<'loading' | 'ok' | 'error'>('loading'),
     error = ref(''),
     origin = ref<Point>(),
-    gpsBusy = ref(false)
+    gpsBusy = ref(false),
+    refreshing = ref(false) // a cached list is on screen while newer data is being fetched
   let generation = 0,
     active: AbortController | undefined
   // Results per query. Re-visiting a query (typing, toggling a filter back, switching pages) is
@@ -49,8 +50,15 @@ export const useDiscovery = defineStore('discovery', () => {
       if (hit) {
         rows.value = hit.rows
         phase.value = 'ok'
-        if (!force && Date.now() - hit.at < FRESH_MS) return
-      } else phase.value = 'loading'
+        if (!force && Date.now() - hit.at < FRESH_MS) {
+          refreshing.value = false
+          return
+        }
+        refreshing.value = true
+      } else {
+        phase.value = 'loading'
+        refreshing.value = false
+      }
       const fetchPage = async (page: number) => {
         const result = pageOf(
           await request('get', path, { params: { ...query, page }, signal: controller.signal }),
@@ -82,8 +90,10 @@ export const useDiscovery = defineStore('discovery', () => {
       cache.set(key, { rows: list, at: Date.now() })
       rows.value = list
       phase.value = 'ok'
+      refreshing.value = false
     } catch (e) {
       if (current === generation) {
+        refreshing.value = false
         rows.value = []
         phase.value = 'error'
         error.value = e instanceof Error && e.message === 'networkError' ? 'networkError' : failure(e)
@@ -107,5 +117,5 @@ export const useDiscovery = defineStore('discovery', () => {
       gpsBusy.value = false
     }
   }
-  return { rows, phase, error, origin, gpsBusy, load, locate, invalidate }
+  return { rows, phase, error, origin, gpsBusy, refreshing, load, locate, invalidate }
 })

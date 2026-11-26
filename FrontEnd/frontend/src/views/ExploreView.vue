@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDiscovery } from '../stores/discovery'
 import { usePrefs } from '../stores/preferences'
@@ -34,6 +34,13 @@ watch(
 const results = computed(() => filterToilets(store.rows, f, store.origin)),
   pages = computed(() => Math.max(1, Math.ceil(results.value.length / 9)))
 watch(results, () => (page.value = 1))
+// After using the pager, bring the top of the results back into view.
+const top = ref<HTMLElement>()
+watch(page, async (n, o) => {
+  if (n === o) return
+  await nextTick()
+  top.value?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+})
 const switches = [
   ['open', 'open'],
   ['wheelchair', 'accessible'],
@@ -104,7 +111,8 @@ function applyFilters() {
       </div>
     </div>
     <div :class="['explorer', mode]">
-      <div class="results">
+      <div ref="top" class="results">
+        <div v-if="store.refreshing" class="refresh-bar" role="progressbar" :aria-label="p.t('loading')" />
         <div class="section-head">
           <h2>{{ p.t('locations') }}</h2>
           <small v-if="store.phase === 'ok'">{{ results.length }} {{ p.t('results') }}</small>
@@ -114,6 +122,7 @@ function applyFilters() {
           :phase="store.phase"
           :error="store.error"
           :retry="store.phase === 'error'"
+          :cards="6"
           @retry="store.load(true, { ...f })"
         />
         <button

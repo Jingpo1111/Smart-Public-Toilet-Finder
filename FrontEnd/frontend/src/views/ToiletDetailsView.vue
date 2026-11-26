@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePrefs, statusKey } from '../stores/preferences'
 import { useAccount } from '../stores/account'
@@ -71,8 +71,10 @@ async function load(silent = false) {
   if (!silent) loading.value = true
   error.value = ''
   try {
-    const raw = unwrap(await request('get', '/toilets/:id', { id }))
+    // Signed-in viewers get isFavorite with the toilet, which saves paging through every favorite.
+    const raw = unwrap(await request('get', '/toilets/:id', { id, auth: !!a.user }))
     item.value = isRow(raw) ? publicToilet(raw) : null
+    if (isRow(raw) && typeof raw.isFavorite === 'boolean') saved.value = raw.isFavorite
     if (!item.value) error.value = 'missing'
   } catch (e) {
     error.value = failure(e)
@@ -113,10 +115,12 @@ async function getFavorite() {
     saved.value = undefined
   }
 }
+// The toilet and its reviews are independent, so they load together instead of one after the other.
 onMounted(async () => {
+  const reviewsLoaded = getReviews()
   await load()
   if (item.value) {
-    await Promise.all([getReviews(), getFavorite()])
+    await Promise.all([reviewsLoaded, saved.value === undefined ? getFavorite() : undefined])
     if (route.query.feedback === '1') {
       await nextTick()
       document.getElementById('reviews')?.focus()
@@ -128,14 +132,22 @@ function guest() {
   void router.push({ path: '/login', query: { redirect: route.fullPath } })
   return true
 }
+watch(
+  () => a.user?.id,
+  (user) => {
+    if (user && item.value) void load(true)
+  },
+)
 async function favorite() {
   if (guest() || busy.value || saved.value === undefined) return
   busy.value = true
+  const previous = saved.value
+  saved.value = !previous // optimistic: the heart responds immediately and rolls back on failure
   try {
-    await request(saved.value ? 'delete' : 'post', favPath, { id })
-    saved.value = !saved.value
+    await request(previous ? 'delete' : 'post', favPath, { id })
     p.toast('saved')
   } catch (e) {
+    saved.value = previous
     p.toast(failure(e))
   } finally {
     busy.value = false

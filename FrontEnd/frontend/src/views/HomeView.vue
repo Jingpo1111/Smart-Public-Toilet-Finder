@@ -40,7 +40,8 @@ async function gps() {
   }
 }
 onMounted(async () => {
-  await store.load()
+  // The list and the optional statistics are independent: request them together.
+  void store.load()
   if (supports('get', '/stats')) {
     try {
       const data = unwrap(await request('get', '/stats', { auth: false }))
@@ -134,6 +135,7 @@ onMounted(async () => {
         :phase="store.phase"
         :error="store.error"
         :retry="store.phase === 'error'"
+        :cards="3"
         description="nonePublished"
         @retry="store.load(true)"
       />
